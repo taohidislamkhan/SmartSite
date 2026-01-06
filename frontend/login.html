@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSite - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #25262b;
+            --primary-light: #dbeafe;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-900);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        /* Role Tabs */
+        .role-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .role-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .role-tab:hover {
+            color: var(--primary);
+            background: white;
+        }
+
+        .role-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+        }
+
+        .login-form {
+            padding: 2rem;
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .form-group input::placeholder {
+            color: var(--gray-600);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .remember-me input {
+            cursor: pointer;
+            width: auto;
+        }
+
+        .remember-me label {
+            margin: 0;
+            color: var(--gray-700);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            font-size: 0.95rem;
+            color: var(--gray-700);
+        }
+
+        .signup-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1rem;
+            }
+
+            .login-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .login-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="logo">🏗️</div>
+                <h1>SmartSite</h1>
+                <p>Construction Area Management</p>
+            </div>
+
+            <!-- Role Tabs -->
+            <div class="role-tabs">
+                <button class="role-tab active" data-role="engineer">Engineer Login</button>
+                <button class="role-tab" data-role="worker">Worker Login</button>
+            </div>
+
+            <!-- Engineer Login Form -->
+            <form class="login-form active" id="engineer-form" data-role="engineer">
+                <div class="error-message" id="engineer-error"></div>
+
+                <div class="form-group">
+                    <label for="engineer-email">Email Address</label>
+                    <input
+                        type="email"
+                        id="engineer-email"
+                        name="email"
+                        placeholder="engineer@example.com"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="engineer-password">Password</label>
+                    <input
+                        type="password"
+                        id="engineer-password"
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                    />
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="engineer-remember" name="remember" />
+                    <label for="engineer-remember">Remember me</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span>Sign In as Engineer</span>
+                </button>
+
+                <div class="signup-link">
+                    Don't have an account?
+                    <a href="/signup.html?role=engineer">Sign up as Engineer</a>
+                </div>
+            </form>
+
+            <!-- Worker Login Form -->
+            <form class="login-form" id="worker-form" data-role="worker">
+                <div class="error-message" id="worker-error"></div>
+
+                <div class="form-group">
+                    <label for="worker-email">Email Address</label>
+                    <input
+                        type="email"
+                        id="worker-email"
+                        name="email"
+                        placeholder="worker@example.com"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="worker-password">Password</label>
+                    <input
+                        type="password"
+                        id="worker-password"
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                    />
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="worker-remember" name="remember" />
+                    <label for="worker-remember">Remember me</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span>Sign In as Worker</span>
+                </button>
+
+                <div class="signup-link">
+                    Don't have an account?
+                    <a href="/signup.html?role=worker">Sign up as Worker</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // Get all tab buttons and forms
+        const tabs = document.querySelectorAll('.role-tab');
+        const forms = document.querySelectorAll('.login-form');
+
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const role = tab.dataset.role;
+
+                // Deactivate all tabs and forms
+                tabs.forEach(t => t.classList.remove('active'));
+                forms.forEach(f => f.classList.remove('active'));
+
+                // Activate selected tab and form
+                tab.classList.add('active');
+                document.querySelector(`#${role}-form`).classList.add('active');
+            });
+        });
+
+        // Form submission
+        forms.forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const role = form.dataset.role;
+                const email = form.querySelector('[name="email"]').value;
+                const password = form.querySelector('[name="password"]').value;
+                const errorDiv = form.querySelector('.error-message');
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                // Clear previous errors
+                errorDiv.classList.remove('show');
+                errorDiv.textContent = '';
+
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                const originalText = submitBtn.querySelector('span').textContent;
+                submitBtn.innerHTML = '<div class="spinner"></div>';
+
+                try {
+                    const response = await fetch(`${API_BASE}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',  // Include cookies
+                        body: JSON.stringify({
+                            email: email,
+                            password: password,
+                            role: role
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Redirect based on role
+                        if (data.role === 'engineer') {
+                            window.location.href = '/engineer-dashboard.html';
+                        } else if (data.role === 'worker') {
+                            window.location.href = '/worker-dashboard.html';
+                        }
+                    } else {
+                        const error = await response.json();
+                        errorDiv.textContent = error.detail || 'Login failed. Please try again.';
+                        errorDiv.classList.add('show');
+                    }
+                } catch (err) {
+                    errorDiv.textContent = 'Connection error. Please try again.';
+                    errorDiv.classList.add('show');
+                    console.error('Login error:', err);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.querySelector('span').textContent = originalText;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

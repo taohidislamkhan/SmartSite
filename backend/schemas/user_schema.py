@@ -1,0 +1,77 @@
+"""
+User Schemas
+Pydantic models for User validation and API responses
+"""
+
+from pydantic import BaseModel, EmailStr, Field
+from datetime import datetime
+from typing import Optional
+from enum import Enum
+
+
+class UserRole(str, Enum):
+    """Allowed user roles"""
+    ENGINEER = "engineer"
+    WORKER = "worker"
+
+
+class UserBase(BaseModel):
+    """Base schema with common User fields"""
+    email: EmailStr
+    role: UserRole
+
+
+class UserCreate(UserBase):
+    """Schema for user registration"""
+    password: str = Field(..., min_length=6, max_length=255)
+    password_confirm: str = Field(..., min_length=6)
+    area_id: Optional[int] = None  # For workers only
+    
+    def validate_password_match(self) -> bool:
+        """Ensure passwords match"""
+        return self.password == self.password_confirm
+
+
+class UserResponse(UserBase):
+    """Schema for user response (GET request)"""
+    user_id: int
+    area_id: Optional[int] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class LoginRequest(BaseModel):
+    """Schema for login request"""
+    email: EmailStr
+    password: str
+    role: UserRole = Field(..., description="Must match role used during signup")
+
+
+class LoginResponse(BaseModel):
+    """Schema for successful login response"""
+    user_id: int
+    email: str
+    role: str
+    area_id: Optional[int] = None
+    message: str = "Login successful"
+
+
+class TokenResponse(BaseModel):
+    """Schema for token-based auth response"""
+    access_token: str
+    token_type: str = "bearer"
+    user: LoginResponse
+
+
+class LogoutResponse(BaseModel):
+    """Schema for logout response"""
+    message: str = "Logged out successfully"
+
+
+class PasswordChangeRequest(BaseModel):
+    """Schema for password change"""
+    current_password: str
+    new_password: str = Field(..., min_length=6)
+    confirm_password: str = Field(..., min_length=6)

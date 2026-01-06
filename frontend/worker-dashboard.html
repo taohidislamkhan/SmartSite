@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSite - Worker Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #dbeafe;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+
+        header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .header-user {
+            text-align: right;
+        }
+
+        .header-user .user-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-user .user-role {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .welcome-card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+        }
+
+        .welcome-card p {
+            color: var(--gray-700);
+            margin-bottom: 1rem;
+        }
+
+        /* Area Info Section */
+        .area-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--gray-900);
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .area-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card {
+            background: var(--gray-50);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .info-card-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Tasks Section */
+        .tasks-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 2rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .tasks-list {
+            padding: 0;
+        }
+
+        .task-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            transition: background 0.3s;
+        }
+
+        .task-item:hover {
+            background: var(--gray-50);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--gray-900);
+            flex: 1;
+        }
+
+        .task-status {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background: #dbeafe;
+            color: #0c4a6e;
+        }
+
+        .task-description {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-section {
+            margin-top: 1rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.3s;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        /* Button */
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-900);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(0,0,0,0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            z-index: 200;
+        }
+
+        .logout-btn:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-user {
+                text-align: left;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .area-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .task-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .logout-btn {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.375rem 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Logout Button -->
+    <button class="logout-btn" onclick="logout()">Sign Out</button>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div>
+                <h1>👷 Worker Dashboard</h1>
+                <p>Your tasks and assignments</p>
+            </div>
+            <div class="header-user">
+                <div class="user-name" id="user-email">Loading...</div>
+                <div class="user-role">Worker</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h2>Welcome back, <span id="worker-name">Worker</span>!</h2>
+            <p id="welcome-message">
+                You are assigned to <strong id="assigned-area">your area</strong>. 
+                Below are your tasks for this project. Complete them according to schedule and update progress regularly.
+            </p>
+            <p style="font-size: 0.9rem; color: var(--gray-600);">
+                📞 Contact your supervisor if you need clarification or encounter blockers.
+            </p>
+        </div>
+
+        <!-- Area Information -->
+        <div class="area-section">
+            <h2 class="section-title">📍 Your Assigned Area</h2>
+            <div class="area-info-grid">
+                <div class="info-card">
+                    <div class="info-card-label">Area Name</div>
+                    <div class="info-card-value" id="area-name">--</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">Location</div>
+                    <div class="info-card-value" id="area-location">--</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">Type</div>
+                    <div class="info-card-value" id="area-type">--</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">Status</div>
+                    <div class="info-card-value" id="area-status">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Tasks Section -->
+        <div class="tasks-section">
+            <div class="section-header">
+                <h2>✓ My Tasks</h2>
+                <p id="tasks-count">Loading your tasks...</p>
+            </div>
+            <div class="tasks-list" id="tasks-container">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-title">No Tasks Yet</div>
+                    <p>You have no tasks assigned. Check back soon!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        /**
+         * WORKER DASHBOARD - Role-based access restriction
+         * Workers can only see:
+         * 1. Their assigned area details
+         * 2. Tasks assigned to them
+         * 3. Task progress and deadlines
+         *
+         * Workers CANNOT see:
+         * - Other workers' tasks
+         * - Costs, budgets, or financial data
+         * - Materials or equipment management
+         * - System-wide reports
+         */
+
+        // On page load: verify authentication and load worker data
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verifyWorkerAuth();
+            await loadWorkerDashboardData();
+            setInterval(loadWorkerDashboardData, 300000); // 5 minutes
+        });
+
+        /**
+         * Verify user is authenticated and has worker role
+         * Prevent workers from accessing engineer data
+         */
+        async function verifyWorkerAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const user = await response.json();
+
+                // IMPORTANT: Role-based access control
+                if (user.role !== 'worker') {
+                    alert('Access denied. This dashboard is for workers only.');
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                document.getElementById('user-email').textContent = user.email;
+                
+                // Store worker's area_id for filtering tasks
+                window.workerAreaId = user.area_id;
+            } catch (err) {
+                console.error('Auth verification failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        /**
+         * Load worker-specific dashboard data
+         * Only fetches: assigned area + tasks for that area
+         */
+        async function loadWorkerDashboardData() {
+            try {
+                // Get current user info
+                const userResponse = await fetch(`${API_BASE}/auth/me`, {
+                    credentials: 'include'
+                });
+
+                if (!userResponse.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const user = await userResponse.json();
+                const areaId = user.area_id;
+
+                // Load area details
+                const areaResponse = await fetch(`${API_BASE}/areas/${areaId}/`, {
+                    credentials: 'include'
+                });
+
+                if (areaResponse.ok) {
+                    const area = await areaResponse.json();
+                    displayAreaInfo(area);
+                }
+
+                // Load only THIS WORKER'S tasks (not all tasks)
+                const tasksResponse = await fetch(`${API_BASE}/tasks/`, {
+                    credentials: 'include'
+                });
+
+                if (tasksResponse.ok) {
+                    const allTasks = await tasksResponse.json();
+                    // Filter: only tasks assigned to this worker in their area
+                    const myTasks = allTasks.filter(task => 
+                        task.area_id === areaId && 
+                        task.assigned_worker_id === user.user_id
+                    );
+                    displayMyTasks(myTasks);
+                }
+            } catch (err) {
+                console.error('Error loading worker data:', err);
+            }
+        }
+
+        /**
+         * Display assigned area information
+         */
+        function displayAreaInfo(area) {
+            document.getElementById('assigned-area').textContent = area.name;
+            document.getElementById('area-name').textContent = area.name || '--';
+            document.getElementById('area-location').textContent = area.location || '--';
+            document.getElementById('area-type').textContent = area.area_type || '--';
+            document.getElementById('area-status').textContent = (area.status || 'N/A').toUpperCase();
+        }
+
+        /**
+         * Display worker's assigned tasks
+         */
+        function displayMyTasks(tasks) {
+            const container = document.getElementById('tasks-container');
+            const countEl = document.getElementById('tasks-count');
+
+            if (!tasks || tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✓</div>
+                        <div class="empty-state-title">All Caught Up!</div>
+                        <p>No tasks assigned at the moment. Check back later.</p>
+                    </div>
+                `;
+                countEl.textContent = '0 tasks';
+                return;
+            }
+
+            countEl.textContent = `${tasks.length} task${tasks.length !== 1 ? 's' : ''}`;
+
+            const tasksHTML = tasks.map(task => {
+                const statusClass = `status-${(task.status || 'pending').toLowerCase()}`;
+                const progress = task.progress_percent || 0;
+                
+                // Format dates
+                const startDate = task.planned_start ? new Date(task.planned_start).toLocaleDateString() : 'N/A';
+                const endDate = task.planned_end ? new Date(task.planned_end).toLocaleDateString() : 'N/A';
+                
+                // Check if overdue
+                const deadline = new Date(task.planned_end);
+                const now = new Date();
+                const isOverdue = deadline < now && task.status !== 'completed';
+
+                return `
+                    <div class="task-item" style="${isOverdue ? 'border-left: 4px solid var(--danger);' : ''}">
+                        <div class="task-header">
+                            <div class="task-title">${escapeHtml(task.title)}</div>
+                            <span class="task-status ${statusClass}">${escapeHtml(task.status || 'Pending')}</span>
+                        </div>
+                        
+                        <div class="task-description">
+                            ${escapeHtml(task.description || 'No description')}
+                        </div>
+                        
+                        <div class="task-meta">
+                            <div class="meta-item">
+                                📅 Start: <strong>${startDate}</strong>
+                            </div>
+                            <div class="meta-item">
+                                🎯 Due: <strong>${endDate}</strong> ${isOverdue ? '<span style="color: var(--danger);">⚠️ OVERDUE</span>' : ''}
+                            </div>
+                        </div>
+
+                        <div class="progress-section">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>${progress}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = tasksHTML;
+        }
+
+        /**
+         * Escape HTML to prevent XSS
+         */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        /**
+         * Logout function
+         */
+        async function logout() {
+            try {
+                await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/login.html';
+            } catch (err) {
+                console.error('Logout failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+    </script>
+</body>
+</html>

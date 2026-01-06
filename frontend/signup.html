@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSite - Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #dbeafe;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-900);
+            padding: 1rem;
+        }
+
+        .signup-container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .signup-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .signup-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        /* Role Selector */
+        .role-selector {
+            padding: 2rem;
+            background: var(--gray-50);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .role-selector h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+
+        .role-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .role-option {
+            padding: 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            text-align: center;
+        }
+
+        .role-option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .role-option input {
+            display: none;
+        }
+
+        .role-option input:checked + label {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .role-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .role-option label {
+            cursor: pointer;
+            margin: 0;
+            display: block;
+            font-weight: 600;
+            color: var(--gray-700);
+            transition: all 0.3s;
+        }
+
+        /* Form */
+        .signup-form {
+            padding: 2rem;
+            display: none;
+        }
+
+        .signup-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .form-group input::placeholder {
+            color: var(--gray-600);
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            color: #16a34a;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            font-size: 0.95rem;
+            color: var(--gray-700);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .login-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .spinner {
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                margin: 0;
+            }
+
+            .signup-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .signup-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .role-options {
+                grid-template-columns: 1fr;
+            }
+
+            .signup-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-card">
+            <!-- Header -->
+            <div class="signup-header">
+                <div class="logo">🏗️</div>
+                <h1>Create Account</h1>
+                <p>Join SmartSite Platform</p>
+            </div>
+
+            <!-- Role Selector -->
+            <div class="role-selector">
+                <h2>Account Type</h2>
+                <div class="role-options">
+                    <div class="role-option selected" data-role="engineer">
+                        <input type="radio" name="role" id="role-engineer" value="engineer" checked />
+                        <label for="role-engineer">👨‍💼 Engineer</label>
+                    </div>
+                    <div class="role-option" data-role="worker">
+                        <input type="radio" name="role" id="role-worker" value="worker" />
+                        <label for="role-worker">👷 Worker</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engineer Signup Form -->
+            <form class="signup-form active" id="engineer-form" data-role="engineer">
+                <div class="error-message" id="engineer-error"></div>
+                <div class="success-message" id="engineer-success"></div>
+
+                <div class="form-group">
+                    <label for="engineer-email">Email Address</label>
+                    <input
+                        type="email"
+                        id="engineer-email"
+                        name="email"
+                        placeholder="engineer@example.com"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="engineer-password">Password</label>
+                    <input
+                        type="password"
+                        id="engineer-password"
+                        name="password"
+                        placeholder="At least 6 characters"
+                        minlength="6"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="engineer-confirm">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="engineer-confirm"
+                        name="password_confirm"
+                        placeholder="Re-enter password"
+                        minlength="6"
+                        required
+                    />
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span>Create Engineer Account</span>
+                </button>
+
+                <div class="login-link">
+                    Already have an account?
+                    <a href="/login.html">Sign in</a>
+                </div>
+            </form>
+
+            <!-- Worker Signup Form -->
+            <form class="signup-form" id="worker-form" data-role="worker">
+                <div class="error-message" id="worker-error"></div>
+                <div class="success-message" id="worker-success"></div>
+
+                <div class="form-group">
+                    <label for="worker-email">Email Address</label>
+                    <input
+                        type="email"
+                        id="worker-email"
+                        name="email"
+                        placeholder="worker@example.com"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="worker-area">Assigned Area</label>
+                    <select id="worker-area" name="area_id" required>
+                        <option value="">-- Select an area --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="worker-password">Password</label>
+                    <input
+                        type="password"
+                        id="worker-password"
+                        name="password"
+                        placeholder="At least 6 characters"
+                        minlength="6"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="worker-confirm">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="worker-confirm"
+                        name="password_confirm"
+                        placeholder="Re-enter password"
+                        minlength="6"
+                        required
+                    />
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span>Create Worker Account</span>
+                </button>
+
+                <div class="login-link">
+                    Already have an account?
+                    <a href="/login.html">Sign in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // Get all role options and forms
+        const roleOptions = document.querySelectorAll('.role-option');
+        const forms = document.querySelectorAll('.signup-form');
+
+        // Load areas for worker dropdown
+        async function loadAreas() {
+            try {
+                const response = await fetch(`${API_BASE}/areas/`);
+                if (response.ok) {
+                    const areas = await response.json();
+                    const select = document.getElementById('worker-area');
+                    
+                    areas.forEach(area => {
+                        const option = document.createElement('option');
+                        option.value = area.area_id;
+                        option.textContent = `${area.name} (${area.location || 'No location'})`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (err) {
+                console.error('Error loading areas:', err);
+            }
+        }
+
+        // Load areas on page load
+        loadAreas();
+
+        // Role switching
+        roleOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const role = option.dataset.role;
+
+                // Deactivate all options and forms
+                roleOptions.forEach(o => o.classList.remove('selected'));
+                forms.forEach(f => f.classList.remove('active'));
+
+                // Activate selected option and form
+                option.classList.add('selected');
+                option.querySelector(`input[value="${role}"]`).checked = true;
+                document.querySelector(`#${role}-form`).classList.add('active');
+            });
+        });
+
+        // Form submission
+        forms.forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const role = form.dataset.role;
+                const email = form.querySelector('[name="email"]').value;
+                const password = form.querySelector('[name="password"]').value;
+                const passwordConfirm = form.querySelector('[name="password_confirm"]').value;
+                const errorDiv = form.querySelector('.error-message');
+                const successDiv = form.querySelector('.success-message');
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                // Clear previous messages
+                errorDiv.classList.remove('show');
+                successDiv.classList.remove('show');
+
+                // Validate passwords match
+                if (password !== passwordConfirm) {
+                    errorDiv.textContent = 'Passwords do not match';
+                    errorDiv.classList.add('show');
+                    return;
+                }
+
+                // Disable button and show loading
+                submitBtn.disabled = true;
+                const originalText = submitBtn.querySelector('span').textContent;
+                submitBtn.innerHTML = '<div class="spinner"></div>';
+
+                try {
+                    const endpoint = `${API_BASE}/auth/signup/${role}`;
+                    const body = {
+                        email: email,
+                        password: password,
+                        password_confirm: passwordConfirm,
+                        role: role
+                    };
+
+                    // Add area for workers
+                    if (role === 'worker') {
+                        const areaId = parseInt(form.querySelector('[name="area_id"]').value);
+                        if (!areaId) {
+                            throw new Error('Please select an area');
+                        }
+                        body.area_id = areaId;
+                    }
+
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    });
+
+                    if (response.ok) {
+                        successDiv.textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} account created successfully! Redirecting to login...`;
+                        successDiv.classList.add('show');
+
+                        // Redirect to login after 2 seconds
+                        setTimeout(() => {
+                            window.location.href = `/login.html?role=${role}`;
+                        }, 2000);
+                    } else {
+                        const error = await response.json();
+                        errorDiv.textContent = error.detail || 'Signup failed. Please try again.';
+                        errorDiv.classList.add('show');
+                    }
+                } catch (err) {
+                    errorDiv.textContent = err.message || 'Connection error. Please try again.';
+                    errorDiv.classList.add('show');
+                    console.error('Signup error:', err);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.querySelector('span').textContent = originalText;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
