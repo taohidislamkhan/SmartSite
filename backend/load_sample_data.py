@@ -21,7 +21,6 @@ def load_sample_data():
         
         cursor = conn.cursor()
         
-        # 1. AREA DATA
         area_data = [
             ("Foundation Area", "Site A - East Wing", 1500.50, "construction", "active"),
             ("Electrical Section", "Site A - Ground Floor", 800.00, "electrical", "active"),
@@ -41,12 +40,10 @@ def load_sample_data():
         print(f"  Inserted {len(area_data)} areas")
         conn.commit()
         
-        # Get the area IDs that were just created
         cursor.execute("SELECT area_id FROM Area ORDER BY area_id DESC LIMIT %s", (len(area_data),))
         area_ids = sorted([row[0] for row in cursor.fetchall()])
         print(f"  Area IDs: {area_ids}")
         
-        # 2. ENGINEER DATA
         engineer_data = [
             ("John Smith", "john.smith@company.com", "555-0101", "Structural Engineering"),
             ("Sarah Johnson", "sarah.johnson@company.com", "555-0102", "Electrical Engineering"),
@@ -67,7 +64,6 @@ def load_sample_data():
         print(f"  Inserted {len(engineer_data)} engineers")
         conn.commit()
         
-        # 3. WORKER DATA
         worker_data = [
             ("Ahmed Hassan", "intermediate", 150.00, "555-1001", area_ids[0]),
             ("Raj Patel", "advanced", 200.00, "555-1002", area_ids[1]),
@@ -90,11 +86,9 @@ def load_sample_data():
         print(f"  Inserted {len(worker_data)} workers")
         conn.commit()
         
-        # Get worker IDs for task assignments
         cursor.execute(f"SELECT worker_id FROM Worker ORDER BY worker_id LIMIT {len(worker_data)}")
         worker_ids = [row[0] for row in cursor.fetchall()]
         
-        # 4. TASK DATA
         task_data = [
             (area_ids[0], "Excavation", "Ground excavation and site preparation", "2024-02-15", "2024-03-15", worker_ids[0]),
             (area_ids[0], "Foundation Pouring", "Concrete foundation preparation and pouring", "2024-03-15", "2024-03-20", worker_ids[1]),
@@ -120,7 +114,6 @@ def load_sample_data():
         print("\n" + "="*60)
         print("All core sample data loaded successfully!")
         
-        # Verify
         print("\nVerifying core data loads:")
         tables = ['Area', 'Engineer', 'Worker', 'Task']
         

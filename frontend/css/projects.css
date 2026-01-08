@@ -1,0 +1,530 @@
+/**
+ * Projects List Page Stylesheet
+ * 
+ * Design System:
+ * - Color Palette: Professional blue/gray with accent orange
+ * - Typography: Clean, readable sans-serif
+ * - Layout: Responsive table-based with mobile considerations
+ * - Spacing: Consistent 1rem base unit
+ */
+
+/* ============================================================================
+   ROOT VARIABLES & RESET
+   ============================================================================ */
+
+:root {
+    /* Colors */
+    --color-primary: #2c3e50;
+    --color-secondary: #3498db;
+    --color-accent: #e74c3c;
+    --color-success: #27ae60;
+    --color-warning: #f39c12;
+    --color-info: #2980b9;
+    --color-light: #ecf0f1;
+    --color-border: #bdc3c7;
+    --color-text: #2c3e50;
+    --color-text-light: #7f8c8d;
+    --color-white: #ffffff;
+    --color-bg: #f5f7fa;
+
+    /* Status Colors */
+    --status-planned: #9b59b6;
+    --status-active: #27ae60;
+    --status-completed: #16a085;
+    --status-on-hold: #e67e22;
+
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.5rem;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+    /* Border Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+    --transition-normal: 250ms ease-in-out;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+}
+
+/* ============================================================================
+   NAVIGATION BAR
+   ============================================================================ */
+
+.navbar {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--spacing-md) 0;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo h1 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.user-info {
+    font-size: var(--font-size-sm);
+    color: var(--color-light);
+}
+
+.nav-link {
+    color: var(--color-light);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-white);
+}
+
+.nav-link.logout {
+    background-color: var(--color-accent);
+    color: var(--color-white);
+}
+
+.nav-link.logout:hover {
+    background-color: #c0392b;
+}
+
+/* ============================================================================
+   LAYOUT & CONTAINER
+   ============================================================================ */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-xl) var(--spacing-md);
+    min-height: calc(100vh - 200px);
+}
+
+/* ============================================================================
+   PAGE HEADER
+   ============================================================================ */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 2px solid var(--color-secondary);
+}
+
+.page-header h2 {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.page-header .subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+/* ============================================================================
+   BUTTONS
+   ============================================================================ */
+
+.btn {
+    display: inline-block;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background-color: var(--color-secondary);
+    color: var(--color-white);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--color-light);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+    background-color: #d5dbdb;
+    border-color: var(--color-text-light);
+}
+
+.btn-small {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
+}
+
+/* ============================================================================
+   FILTER SECTION
+   ============================================================================ */
+
+.filters {
+    background-color: var(--color-white);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.filter-group label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+.filter-select,
+.filter-input {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    background-color: var(--color-white);
+    min-width: 200px;
+    transition: border-color var(--transition-fast);
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.filter-input::placeholder {
+    color: var(--color-text-light);
+}
+
+/* ============================================================================
+   PROJECTS SECTION
+   ============================================================================ */
+
+.projects-section {
+    background-color: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.loading {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+    text-align: center;
+    color: var(--color-text-light);
+    font-size: var(--font-size-lg);
+}
+
+.empty-state {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+    text-align: center;
+    color: var(--color-text-light);
+}
+
+.empty-state p {
+    margin-bottom: var(--spacing-lg);
+}
+
+/* ============================================================================
+   TABLE STYLING
+   ============================================================================ */
+
+.projects-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.projects-table thead {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.projects-table th {
+    padding: var(--spacing-md) var(--spacing-lg);
+    text-align: left;
+    font-weight: var(--font-weight-bold);
+    border-bottom: 2px solid var(--color-secondary);
+}
+
+.projects-table tbody tr {
+    border-bottom: 1px solid var(--color-light);
+    transition: background-color var(--transition-fast);
+}
+
+.projects-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.projects-table td {
+    padding: var(--spacing-md) var(--spacing-lg);
+    vertical-align: middle;
+}
+
+/* ============================================================================
+   STATUS BADGES
+   ============================================================================ */
+
+.status-badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-transform: capitalize;
+}
+
+.status-badge.planned {
+    background-color: rgba(155, 89, 182, 0.2);
+    color: var(--status-planned);
+}
+
+.status-badge.active {
+    background-color: rgba(39, 174, 96, 0.2);
+    color: var(--status-active);
+}
+
+.status-badge.completed {
+    background-color: rgba(22, 160, 133, 0.2);
+    color: var(--status-completed);
+}
+
+.status-badge.on-hold {
+    background-color: rgba(230, 126, 34, 0.2);
+    color: var(--status-on-hold);
+}
+
+/* ============================================================================
+   PROGRESS BAR
+   ============================================================================ */
+
+.progress-container {
+    width: 100%;
+    height: 24px;
+    background-color: var(--color-light);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-secondary), #3498db);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: width 0.5s ease;
+}
+
+/* ============================================================================
+   BUDGET STATUS
+   ============================================================================ */
+
+.budget-status {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.budget-status.within {
+    background-color: rgba(39, 174, 96, 0.2);
+    color: var(--status-active);
+}
+
+.budget-status.over {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: var(--color-accent);
+}
+
+.budget-status.unknown {
+    background-color: rgba(127, 140, 141, 0.2);
+    color: var(--color-text-light);
+}
+
+/* ============================================================================
+   ACTION LINKS
+   ============================================================================ */
+
+.action-link {
+    color: var(--color-secondary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.action-link:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--color-info);
+}
+
+/* ============================================================================
+   FOOTER
+   ============================================================================ */
+
+.footer {
+    background-color: var(--color-primary);
+    color: var(--color-light);
+    text-align: center;
+    padding: var(--spacing-lg) var(--spacing-md);
+    margin-top: var(--spacing-2xl);
+    font-size: var(--font-size-sm);
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        text-align: center;
+    }
+
+    .nav-right {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+
+    .filters {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-select,
+    .filter-input {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .projects-table {
+        font-size: 0.75rem;
+    }
+
+    .projects-table th,
+    .projects-table td {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: var(--spacing-md);
+    }
+
+    .page-header h2 {
+        font-size: var(--font-size-lg);
+    }
+
+    .projects-table {
+        font-size: 0.7rem;
+    }
+
+    .projects-table th,
+    .projects-table td {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+}

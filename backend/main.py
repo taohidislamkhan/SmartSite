@@ -8,7 +8,6 @@ import os
 import sys
 from pathlib import Path
 
-# Add the backend directory to Python path for imports
 backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
@@ -17,7 +16,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 
-# Import routers - using absolute imports now that we added to sys.path
 from routes.engineer_routes import router as engineer_router
 from routes.area_routes import router as area_router
 from routes.worker_routes import router as worker_router
@@ -35,7 +33,6 @@ from routes.auth_routes import router as auth_router
 from routes.dashboard_routes import router as dashboard_router
 from routes.projects_routes import router as projects_router
 
-# Initialize FastAPI app
 app = FastAPI(
     title="SmartSite API",
     description="Construction Area Management System",
@@ -51,8 +48,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register routers with /api prefix
-# This ensures API routes take precedence over static file serving
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(engineer_router, prefix="/api/engineers", tags=["Engineers"])
 app.include_router(area_router, prefix="/api/areas", tags=["Areas"])
@@ -70,7 +65,6 @@ app.include_router(advanced_query_router, prefix="/api/advanced-queries", tags=[
 app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(projects_router, prefix="/api/projects", tags=["Projects"])
 
-# Root endpoint - redirect to login
 @app.get("/")
 def root_redirect():
     """
@@ -80,7 +74,6 @@ def root_redirect():
     return RedirectResponse(url="/login.html", status_code=303)
 
 
-# Health check endpoint - serves API info only
 @app.get("/api", tags=["Health"])
 def api_root():
     """
@@ -136,12 +129,7 @@ def api_health_check():
     }
 
 
-# Serve static frontend files
-# Configure the path to the frontend directory (one level up from backend)
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 
-# Mount static files - this serves HTML, CSS, JS from the frontend folder
-# This must be registered AFTER all API routes so that API routes take precedence
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
-    

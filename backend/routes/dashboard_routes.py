@@ -139,8 +139,8 @@ def get_engineer_projects(
         # Alert count
         func.count(func.distinct(Alert.alert_id)).label('open_alerts'),
         
-        # Budget/Cost
-        func.coalesce(Budget.estimated_budget, 0).label('budget_total'),
+        # Budget/Cost - wrap non-aggregated columns in MAX() for GROUP BY compliance
+        func.coalesce(func.max(Budget.estimated_budget), 0).label('budget_total'),
         func.coalesce(func.sum(Cost.amount), 0).label('cost_total')
         
     ).outerjoin(Task, Area.area_id == Task.area_id)\

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details - Area Management System</title>
+    <link rel="stylesheet" href="/css/project_details.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>Area Management System</h1>
+            </div>
+            <div class="nav-right">
+                <span id="userInfo" class="user-info"></span>
+                <a href="/projects.html" class="nav-link">Back to Projects</a>
+                <a href="/engineer-dashboard.html" class="nav-link">Back to Dashboard</a>
+                <a href="/api/auth/logout" class="nav-link logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Loading State -->
+        <div id="loadingSpinner" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading project details...</p>
+        </div>
+
+        <!-- Project Details Content -->
+        <div id="projectContent" style="display: none;">
+            
+            <!-- Section Navigation / Tabs -->
+            <div class="section-nav">
+                <button class="tab-btn active" data-section="overview">Overview</button>
+                <button class="tab-btn" data-section="tasks">Tasks</button>
+                <button class="tab-btn" data-section="workers">Workers</button>
+                <button class="tab-btn" data-section="materials">Materials</button>
+                <button class="tab-btn" data-section="equipment">Equipment</button>
+                <button class="tab-btn" data-section="budget">Budget</button>
+                <button class="tab-btn" data-section="alerts">Alerts</button>
+                <button class="tab-btn" data-section="incidents">Safety</button>
+            </div>
+
+            <!-- ========================================
+                 SECTION A: PROJECT OVERVIEW
+                 ======================================== -->
+            <section id="overview" class="project-section active">
+                <h2 class="section-title">📊 Project Overview</h2>
+                
+                <div class="overview-grid">
+                    <!-- Project Header Card -->
+                    <div class="overview-card main-card">
+                        <div class="card-content">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h3 id="projectName" class="project-name">Project Name</h3>
+                                    <div class="project-meta">
+                                        <span class="badge" id="statusBadge">Active</span>
+                                        <span class="area-type" id="areaType">Type</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="editProject()">Edit Project</button>
+                            </div>
+                            <div class="project-details-grid">
+                                <div class="detail-item">
+                                    <label>Location</label>
+                                    <p id="projectLocation">-</p>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Assigned Engineer</label>
+                                    <p id="assignedEngineer">-</p>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Boundary Size</label>
+                                    <p id="boundarySize">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Card -->
+                    <div class="overview-card">
+                        <h4>Overall Progress</h4>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <p class="progress-text"><span id="progressPercent">0</span>% Complete</p>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat">
+                                <span class="stat-label">Total Tasks</span>
+                                <span class="stat-value" id="totalTasks">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Completed</span>
+                                <span class="stat-value completed" id="completedTasks">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">In Progress</span>
+                                <span class="stat-value in-progress" id="inProgressTasks">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Pending</span>
+                                <span class="stat-value pending" id="pendingTasks">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Card -->
+                    <div class="overview-card">
+                        <h4>Timeline</h4>
+                        <div class="timeline-item">
+                            <label>Planned Start</label>
+                            <p id="plannedStart">-</p>
+                        </div>
+                        <div class="timeline-item">
+                            <label>Planned End</label>
+                            <p id="plannedEnd">-</p>
+                        </div>
+                        <div class="timeline-item">
+                            <label>Days Remaining</label>
+                            <p id="daysRemaining" class="highlight">-</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION B: TASKS
+                 ======================================== -->
+            <section id="tasks" class="project-section">
+                <h2 class="section-title">📋 Tasks</h2>
+                
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showTaskForm()">+ Add Task</button>
+                </div>
+
+                <div id="tasksContainer">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Task Name</th>
+                                <th>Status</th>
+                                <th>Assigned Worker</th>
+                                <th>Deadline</th>
+                                <th>Progress</th>
+                                <th>Delay</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksTableBody">
+                            <!-- Tasks populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noTasksState" class="empty-state" style="display: none;">
+                    <p>No tasks yet. Create one to get started.</p>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION C: WORKERS
+                 ======================================== -->
+            <section id="workers" class="project-section">
+                <h2 class="section-title">👷 Workers</h2>
+                
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAssignWorkerForm()">+ Assign Worker</button>
+                </div>
+
+                <div id="workersContainer">
+                    <div class="workers-grid" id="workersGrid">
+                        <!-- Worker cards populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div id="noWorkersState" class="empty-state" style="display: none;">
+                    <p>No workers assigned to this project yet.</p>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION D: MATERIALS
+                 ======================================== -->
+            <section id="materials" class="project-section">
+                <h2 class="section-title">📦 Materials & Inventory</h2>
+                
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showMaterialForm()">+ Add Material</button>
+                </div>
+
+                <div id="materialsContainer">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Material Name</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Reorder Threshold</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materialsTableBody">
+                            <!-- Materials populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noMaterialsState" class="empty-state" style="display: none;">
+                    <p>No materials recorded for this project.</p>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION E: EQUIPMENT
+                 ======================================== -->
+            <section id="equipment" class="project-section">
+                <h2 class="section-title">⚙️ Equipment</h2>
+                
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showEquipmentForm()">+ Add Equipment</button>
+                </div>
+
+                <div id="equipmentContainer">
+                    <div class="equipment-grid" id="equipmentGrid">
+                        <!-- Equipment cards populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div id="noEquipmentState" class="empty-state" style="display: none;">
+                    <p>No equipment assigned to this project.</p>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION F: COST & BUDGET
+                 ======================================== -->
+            <section id="budget" class="project-section">
+                <h2 class="section-title">💰 Cost & Budget</h2>
+                
+                <div class="budget-overview">
+                    <div class="budget-card">
+                        <h4>Estimated Budget</h4>
+                        <p class="budget-value" id="estimatedBudget">₹0</p>
+                    </div>
+                    <div class="budget-card">
+                        <h4>Total Cost Incurred</h4>
+                        <p class="budget-value" id="totalCostIncurred">₹0</p>
+                    </div>
+                    <div class="budget-card" id="remainingBudgetCard">
+                        <h4>Remaining Budget</h4>
+                        <p class="budget-value" id="remainingBudget">₹0</p>
+                    </div>
+                </div>
+
+                <div class="budget-progress">
+                    <h4>Budget Utilization</h4>
+                    <div class="progress-bar large">
+                        <div id="budgetProgressFill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <p class="progress-text"><span id="budgetPercent">0</span>% of budget spent</p>
+                </div>
+
+                <div id="costBreakdownTable">
+                    <h4>Cost Breakdown</h4>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="costBreakdownBody">
+                            <!-- Cost breakdown populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION G: ALERTS
+                 ======================================== -->
+            <section id="alerts" class="project-section">
+                <h2 class="section-title">⚠️ Alerts & Issues</h2>
+                
+                <div class="filter-bar">
+                    <select id="alertFilter" class="filter-select">
+                        <option value="">All Alerts</option>
+                        <option value="open">Open</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+
+                <div id="alertsContainer">
+                    <div id="alertsList">
+                        <!-- Alerts populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div id="noAlertsState" class="empty-state" style="display: none;">
+                    <p>No alerts for this project. Everything looks good!</p>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION H: SAFETY INCIDENTS
+                 ======================================== -->
+            <section id="incidents" class="project-section">
+                <h2 class="section-title">🛡️ Safety Incidents</h2>
+                
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showIncidentForm()">+ Report Incident</button>
+                </div>
+
+                <div id="incidentsContainer">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Severity</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incidentsTableBody">
+                            <!-- Incidents populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noIncidentsState" class="empty-state" style="display: none;">
+                    <p>No safety incidents recorded for this project.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ========================================
+         MODAL FORMS FOR CRUD OPERATIONS
+         ======================================== -->
+
+    <!-- Edit Project Modal -->
+    <div id="editProjectModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Project</h3>
+                <button class="modal-close" onclick="closeModal('editProjectModal')">&times;</button>
+            </div>
+            <form id="editProjectForm" onsubmit="handleEditProject(event)">
+                <div class="form-group">
+                    <label for="projectNameInput">Project Name *</label>
+                    <input type="text" id="projectNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectLocationInput">Location *</label>
+                    <input type="text" id="projectLocationInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectTypeInput">Area Type</label>
+                    <input type="text" id="projectTypeInput">
+                </div>
+                <div class="form-group">
+                    <label for="projectBoundaryInput">Boundary Size (sq.m)</label>
+                    <input type="number" id="projectBoundaryInput" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="projectStatusInput">Status *</label>
+                    <select id="projectStatusInput" required>
+                        <option value="planned">Planned</option>
+                        <option value="active">Active</option>
+                        <option value="on-hold">On Hold</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editProjectModal')">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteProject()">Delete Project</button>
+                </div>
+                <div id="editProjectError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div id="editTaskModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Task</h3>
+                <button class="modal-close" onclick="closeModal('editTaskModal')">&times;</button>
+            </div>
+            <form id="editTaskForm" onsubmit="handleEditTask(event)">
+                <div class="form-group">
+                    <label for="taskTitleInput">Task Title *</label>
+                    <input type="text" id="taskTitleInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskStatusInput">Status *</label>
+                    <select id="taskStatusInput" required>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="blocked">Blocked</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskDeadlineInput">Deadline *</label>
+                    <input type="date" id="taskDeadlineInput" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editTaskModal')">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteTask()">Delete Task</button>
+                </div>
+                <div id="editTaskError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Worker Modal -->
+    <div id="editWorkerModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Worker</h3>
+                <button class="modal-close" onclick="closeModal('editWorkerModal')">&times;</button>
+            </div>
+            <form id="editWorkerForm" onsubmit="handleEditWorker(event)">
+                <div class="form-group">
+                    <label for="workerNameInput">Worker Name *</label>
+                    <input type="text" id="workerNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="workerSkillInput">Skill *</label>
+                    <input type="text" id="workerSkillInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="workerCostInput">Cost Per Day *</label>
+                    <input type="number" id="workerCostInput" step="0.01" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editWorkerModal')">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteWorker()">Delete Worker</button>
+                </div>
+                <div id="editWorkerError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Material Modal -->
+    <div id="editMaterialModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Material</h3>
+                <button class="modal-close" onclick="closeModal('editMaterialModal')">&times;</button>
+            </div>
+            <form id="editMaterialForm" onsubmit="handleEditMaterial(event)">
+                <div class="form-group">
+                    <label for="materialNameInput">Material Name *</label>
+                    <input type="text" id="materialNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="materialQuantityInput">Quantity *</label>
+                    <input type="number" id="materialQuantityInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="materialUnitInput">Unit *</label>
+                    <input type="text" id="materialUnitInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="materialThresholdInput">Reorder Threshold *</label>
+                    <input type="number" id="materialThresholdInput" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editMaterialModal')">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteMaterial()">Delete Material</button>
+                </div>
+                <div id="editMaterialError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Equipment Modal -->
+    <div id="editEquipmentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Equipment</h3>
+                <button class="modal-close" onclick="closeModal('editEquipmentModal')">&times;</button>
+            </div>
+            <form id="editEquipmentForm" onsubmit="handleEditEquipment(event)">
+                <div class="form-group">
+                    <label for="equipmentNameInput">Equipment Name *</label>
+                    <input type="text" id="equipmentNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="equipmentStatusInput">Status *</label>
+                    <select id="equipmentStatusInput" required>
+                        <option value="available">Available</option>
+                        <option value="in-use">In Use</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editEquipmentModal')">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteEquipment()">Delete Equipment</button>
+                </div>
+                <div id="editEquipmentError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Area Management System. Academic DBMS Project.</p>
+    </footer>
+
+    <script src="/js/project_details.js"></script>
+</body>
+</html>

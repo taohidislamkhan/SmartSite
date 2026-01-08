@@ -9,14 +9,12 @@ from sqlalchemy import create_engine, text
 def init_db():
     """Initialize database - create User table using raw SQL"""
     try:
-        # Use the same database URL as configured in database.py
         DATABASE_URL = "mysql+mysqlconnector://root:root@localhost:3306/area_mgmt"
         
         engine = create_engine(DATABASE_URL)
         
         print("Creating User table...")
         
-        # SQL to create User table (if not exists)
         create_user_sql = """
         CREATE TABLE IF NOT EXISTS `User` (
             user_id INT NOT NULL AUTO_INCREMENT,
@@ -32,7 +30,6 @@ def init_db():
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
         """
         
-        # Execute SQL
         with engine.connect() as conn:
             conn.execute(text(create_user_sql))
             conn.commit()

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Area Management System</title>
+    <link rel="stylesheet" href="/css/projects.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+            </div>
+            <div class="nav-right">
+                <span id="userInfo" class="user-info"></span>
+                <a href="/engineer-dashboard.html" class="nav-link">Back to Dashboard</a>
+                <a href="/api/auth/logout" class="nav-link logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Page Header -->
+        <section class="page-header">
+            <div>
+                <h2>Projects</h2>
+                <p class="subtitle">All assigned projects and areas</p>
+            </div>
+            <a href="/create_project.html" class="btn btn-primary">+ Create New Project</a>
+        </section>
+
+        <!-- Filter Section -->
+        <section class="filters">
+            <div class="filter-group">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" class="filter-select">
+                    <option value="">All Statuses</option>
+                    <option value="planned">Planned</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="on-hold">On Hold</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="locationFilter">Location:</label>
+                <input 
+                    type="text" 
+                    id="locationFilter" 
+                    class="filter-input" 
+                    placeholder="Search by location..."
+                >
+            </div>
+
+            <button id="resetFilters" class="btn btn-secondary">Reset Filters</button>
+        </section>
+
+        <!-- Projects Table -->
+        <section class="projects-section">
+            <div id="loadingSpinner" class="loading">
+                <p>Loading projects...</p>
+            </div>
+
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <p>No projects found. Create your first project to get started.</p>
+                <a href="/create_project.html" class="btn btn-primary">Create Project</a>
+            </div>
+
+            <table id="projectsTable" class="projects-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Location</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Budget Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="projectsTableBody">
+                    <!-- Projects will be populated here by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Area Management System. Academic DBMS Project.</p>
+    </footer>
+
+    <script src="/js/projects.js"></script>
+</body>
+</html>

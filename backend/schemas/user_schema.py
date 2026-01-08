@@ -36,6 +36,7 @@ class UserResponse(UserBase):
     """Schema for user response (GET request)"""
     user_id: int
     area_id: Optional[int] = None
+    engineer_id: Optional[int] = None  # For engineers: ID from Engineer table
     created_at: datetime
 
     class Config:
@@ -55,6 +56,7 @@ class LoginResponse(BaseModel):
     email: str
     role: str
     area_id: Optional[int] = None
+    engineer_id: Optional[int] = None  # For engineers: ID from Engineer table
     message: str = "Login successful"
 
 

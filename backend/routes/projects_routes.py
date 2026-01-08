@@ -16,6 +16,7 @@ from typing import Optional
 
 from database import SessionLocal
 from models.area import Area
+from models.engineer import Engineer
 from models.user import User
 from routes.auth_routes import get_current_user, require_engineer
 
@@ -63,7 +64,7 @@ class CreateProjectRequest(BaseModel):
         return v
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "name": "Downtown Commercial Complex",
                 "location": "123 Main Street, City, State",
@@ -105,7 +106,8 @@ def create_project(
     
     DBMS Logic:
     - Area table stores all projects
-    - assigned_engineer_id is set to current user's user_id
+    - assigned_engineer_id is set to the Engineer.engineer_id (from Engineer table)
+    - Engineer record is found by matching email with logged-in user
     - Status defaults to 'planned' if not provided
     
     Args:
@@ -118,16 +120,26 @@ def create_project(
     
     Raises:
         HTTPException 400: Invalid input data or database error
+        HTTPException 404: Engineer profile not found (should have Engineer record in DB)
     """
     try:
-        # Create new Area (Project) with engineer's user_id
+        # Find Engineer by matching email with current user's email
+        engineer = db.query(Engineer).filter(Engineer.email == current_engineer.email).first()
+        
+        if not engineer:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Engineer profile not found. Please contact administrator to create your engineer profile."
+            )
+        
+        # Create new Area (Project) with engineer's engineer_id
         new_project = Area(
             name=project_data.name,
             location=project_data.location,
             area_type=project_data.area_type,
             boundary_size=project_data.boundary_size,
             status=project_data.status,
-            assigned_engineer_id=current_engineer.user_id  # Automatic engineer assignment
+            assigned_engineer_id=engineer.engineer_id  # Use Engineer.engineer_id, not User.user_id
         )
 
         # Add to database
@@ -135,7 +147,7 @@ def create_project(
         db.commit()
         db.refresh(new_project)
 
-        return ProjectResponse.from_orm(new_project)
+        return ProjectResponse.model_validate(new_project)
 
     except IntegrityError as e:
         db.rollback()

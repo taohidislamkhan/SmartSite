@@ -14,7 +14,7 @@ DATABASE_URL = (
 
 engine = create_engine(
     DATABASE_URL,
-    echo=True,   # shows SQL queries in terminal (good for DBMS demo)
+    echo=True,
     pool_pre_ping=True
 )
 

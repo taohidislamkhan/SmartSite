@@ -322,11 +322,19 @@ def login(
         samesite="lax"
     )
     
+    # Find engineer_id if user is an engineer
+    engineer_id = None
+    if user.role == 'engineer':
+        engineer = db.query(Engineer).filter(Engineer.email == user.email).first()
+        if engineer:
+            engineer_id = engineer.engineer_id
+    
     return LoginResponse(
         user_id=user.user_id,
         email=user.email,
         role=user.role,
         area_id=user.area_id,
+        engineer_id=engineer_id,
         message="Login successful"
     )
 
@@ -355,15 +363,33 @@ def logout(
 
 @router.get("/me", response_model=UserResponse, tags=["Auth"])
 def get_current_user_info(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     GET /auth/me
     Get current logged-in user information
     
-    Returns: Current user details
+    For engineers: Also returns engineer_id from Engineer table (matched by email)
+    
+    Returns: Current user details with engineer_id if engineer role
     """
-    return current_user
+    # If engineer, find engineer_id by email
+    engineer_id = None
+    if current_user.role == 'engineer':
+        engineer = db.query(Engineer).filter(Engineer.email == current_user.email).first()
+        if engineer:
+            engineer_id = engineer.engineer_id
+    
+    # Build response with engineer_id
+    return UserResponse(
+        user_id=current_user.user_id,
+        email=current_user.email,
+        role=current_user.role,
+        area_id=current_user.area_id,
+        engineer_id=engineer_id,
+        created_at=current_user.created_at
+    )
 
 
 @router.get("/protected/test", tags=["Auth"])
@@ -379,3 +405,33 @@ def test_protected_endpoint(
         "role": current_user.role,
         "user_id": current_user.user_id
     }
+
+@router.get("/debug/engineer-lookup", tags=["Debug"])
+def debug_engineer_lookup(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    GET /auth/debug/engineer-lookup
+    Debug endpoint - check if engineer exists for current user
+    """
+    from models.engineer import Engineer
+    
+    engineer = db.query(Engineer).filter(Engineer.email == current_user.email).first()
+    
+    if engineer:
+        return {
+            "found": True,
+            "user_email": current_user.email,
+            "user_role": current_user.role,
+            "engineer_id": engineer.engineer_id,
+            "engineer_email": engineer.email,
+            "engineer_name": engineer.name
+        }
+    else:
+        return {
+            "found": False,
+            "user_email": current_user.email,
+            "user_role": current_user.role,
+            "message": f"No engineer found with email {current_user.email}"
+        }
