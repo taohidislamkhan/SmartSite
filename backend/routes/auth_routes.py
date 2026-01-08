@@ -38,15 +38,11 @@ from schemas.user_schema import (
 
 router = APIRouter()
 
-# Password hashing context
-# Use argon2 for password hashing (more secure and no 72-byte limit)
 pwd_context = CryptContext(
     schemes=["argon2"],
     deprecated="auto"
 )
 
-# Session store (in production, use Redis or database)
-# Format: {session_token: {user_id, email, role, area_id, created_at}}
 sessions = {}
 
 # ============================================================================
@@ -86,7 +82,6 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     Dependency: Extract current user from session
     Raises 401 if not authenticated
     """
-    # Get session token from cookie
     token = request.cookies.get("session_token")
     
     if not token or token not in sessions:
@@ -99,7 +94,6 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == session_data["user_id"]).first()
     
     if not user:
-        # Session exists but user deleted - clear session
         del sessions[token]
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -152,14 +146,12 @@ def signup_engineer(
     
     Returns: New engineer user details
     """
-    # Validate password match
     if user_data.password != user_data.password_confirm:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Passwords do not match"
         )
     
-    # Check if email already exists
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
         raise HTTPException(

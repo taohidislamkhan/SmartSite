@@ -86,7 +86,6 @@ def get_delayed_tasks(
         result = db.execute(text(query), params)
         rows = result.fetchall()
 
-        # Convert database rows to Pydantic models
         tasks = []
         for row in rows:
             tasks.append(DelayedTaskResponse(

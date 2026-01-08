@@ -1,7 +1,3 @@
-# SQLAlchemy ORM Models
-# These models represent the MySQL tables in area_mgmt database
-# They are READ/WRITE only - table structure is managed in MySQL
-
 from .user import User
 from .engineer import Engineer
 from .area import Area

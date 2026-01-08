@@ -70,7 +70,6 @@ def get_active_alerts(db: Session = Depends(get_db)):
     """
     alerts = db.query(Alert).filter(Alert.is_resolved == False).all()
     
-    # Sort by severity: critical > warning > info
     severity_order = {'critical': 0, 'warning': 1, 'info': 2}
     alerts.sort(key=lambda x: severity_order.get(x.severity, 3))
     
@@ -262,13 +261,11 @@ def get_alert_statistics(db: Session = Depends(get_db)):
     active_alerts = db.query(func.count(Alert.alert_id)).filter(Alert.is_resolved == False).scalar()
     resolved_alerts = db.query(func.count(Alert.alert_id)).filter(Alert.is_resolved == True).scalar()
     
-    # Breakdown by severity
     severity_breakdown = db.query(
         Alert.severity,
         func.count(Alert.alert_id).label('count')
     ).filter(Alert.is_resolved == False).group_by(Alert.severity).all()
     
-    # Breakdown by type
     type_breakdown = db.query(
         Alert.alert_type,
         func.count(Alert.alert_id).label('count')
