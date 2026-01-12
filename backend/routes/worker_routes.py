@@ -134,3 +134,76 @@ def delete_worker(worker_id: int, db: Session = Depends(get_db)):
             detail="Error deleting worker"
         )
 
+
+@router.put("/{worker_id}/task", response_model=WorkerResponse)
+def assign_task(
+    worker_id: int,
+    task_data: dict,
+    db: Session = Depends(get_db)
+):
+    """
+    PUT /workers/{worker_id}/task
+    Assign a task to a worker
+    Body: { "task_id": int }
+    Returns: Updated WorkerResponse object
+    """
+    worker = db.query(Worker).filter(Worker.worker_id == worker_id).first()
+    if not worker:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Worker with ID {worker_id} not found"
+        )
+    
+    try:
+        task_id = task_data.get("task_id")
+        worker.current_task_id = task_id
+        db.commit()
+        db.refresh(worker)
+        return worker
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error assigning task to worker"
+        )
+
+
+@router.put("/{worker_id}/area", response_model=WorkerResponse)
+def assign_area(
+    worker_id: int,
+    area_data: dict,
+    db: Session = Depends(get_db)
+):
+    """
+    PUT /workers/{worker_id}/area
+    Reassign a worker to a different area
+    Body: { "area_id": int, "retain_task": bool (optional) }
+    Returns: Updated WorkerResponse object
+    """
+    worker = db.query(Worker).filter(Worker.worker_id == worker_id).first()
+    if not worker:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Worker with ID {worker_id} not found"
+        )
+    
+    try:
+        area_id = area_data.get("area_id")
+        retain_task = area_data.get("retain_task", False)
+        
+        worker.current_area_id = area_id
+        
+        # If not retaining task, clear current task assignment
+        if not retain_task:
+            worker.current_task_id = None
+        
+        db.commit()
+        db.refresh(worker)
+        return worker
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error reassigning worker to area"
+        )
+

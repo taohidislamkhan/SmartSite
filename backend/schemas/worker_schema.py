@@ -15,6 +15,7 @@ class WorkerBase(BaseModel):
     cost_per_day: Optional[Decimal] = None
     contact: Optional[str] = None
     current_area_id: Optional[int] = None
+    current_task_id: Optional[int] = None
 
 
 class WorkerCreate(WorkerBase):

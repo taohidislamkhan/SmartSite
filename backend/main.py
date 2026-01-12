@@ -39,6 +39,40 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Middleware to handle trailing slash redirects for API endpoints
+@app.middleware("http")
+async def trailing_slash_middleware(request: Request, call_next):
+    """
+    Middleware to redirect API requests without trailing slashes to URLs with trailing slashes.
+    Only redirects if a route with trailing slash exists. Only applies to GET requests.
+    """
+    path = request.url.path
+    method = request.method
+    
+    # Only handle GET requests to API endpoints without trailing slashes
+    if method == "GET" and path.startswith("/api/") and not path.endswith("/"):
+        # Check if a route with trailing slash exists
+        potential_path = path + "/"
+        
+        # Check if this path+slash exists in the app routes
+        route_exists = any(
+            route.path == potential_path 
+            for route in app.routes 
+            if hasattr(route, 'path')
+        )
+        
+        if route_exists:
+            # Preserve query string if present
+            new_path = potential_path
+            if request.url.query:
+                new_path += f"?{request.url.query}"
+            
+            # Return redirect response
+            return RedirectResponse(url=new_path, status_code=307)
+    
+    response = await call_next(request)
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

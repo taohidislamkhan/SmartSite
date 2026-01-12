@@ -10,7 +10,7 @@ from database import Base
 class Worker(Base):
     """
     Worker Table
-    Stores worker information: name, skill, cost per day, contact, current area assignment
+    Stores worker information: name, skill, cost per day, contact, current area assignment, current task assignment
     """
     __tablename__ = 'Worker'
 
@@ -22,6 +22,7 @@ class Worker(Base):
     contact = Column(String(80), nullable=True)
     
     current_area_id = Column(Integer, ForeignKey('Area.area_id', ondelete='SET NULL'), nullable=True)
+    current_task_id = Column(Integer, ForeignKey('Task.task_id', ondelete='SET NULL'), nullable=True)
 
     def __repr__(self):
         return f"<Worker(worker_id={self.worker_id}, name='{self.name}', skill='{self.skill}')>"
