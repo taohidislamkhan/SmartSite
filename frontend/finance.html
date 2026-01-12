@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost & Budget - SmartSite</title>
+    <link rel="stylesheet" href="css/finance.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">SmartSite</div>
+            <div class="navbar-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="finance.html" class="nav-link active">Finance</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <span id="userInfo" class="user-info">User</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- SECTION A: PAGE HEADER -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1>Cost & Budget</h1>
+                <p class="subtitle">Financial Control & Monitoring</p>
+            </div>
+            <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+        </header>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading financial data...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <!-- SECTION B: COST ENTRIES SECTION -->
+        <section class="section cost-entries-section">
+            <div class="section-header">
+                <h2>Cost Entries</h2>
+                <p class="section-description">Detailed financial transactions recorded in the system</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filterProject">Filter by Project:</label>
+                    <select id="filterProject" class="filter-select">
+                        <option value="">All Projects</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterCostType">Filter by Cost Type:</label>
+                    <select id="filterCostType" class="filter-select">
+                        <option value="">All Types</option>
+                        <option value="material">Material</option>
+                        <option value="labor">Labor</option>
+                        <option value="equipment">Equipment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cost Entries Table -->
+            <div class="table-wrapper">
+                <table class="data-table" id="costEntriesTable">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Cost Type</th>
+                            <th>Amount</th>
+                            <th>Incurred Date</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="costEntriesBody">
+                        <!-- Cost entries will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECTION C: BUDGET VS COST SUMMARY -->
+        <section class="section budget-summary-section">
+            <div class="section-header">
+                <h2>Budget vs Cost Summary</h2>
+                <p class="section-description">Per-project financial overview and remaining budget</p>
+            </div>
+
+            <div class="summary-cards" id="summaryCards">
+                <!-- Budget summary cards will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- SECTION D: AREAS OVER BUDGET -->
+        <section class="section over-budget-section">
+            <div class="section-header">
+                <h2>Areas Over Budget</h2>
+                <p class="section-description">Projects where total cost exceeds estimated budget</p>
+            </div>
+
+            <!-- Over Budget Table -->
+            <div class="table-wrapper" id="overBudgetContainer" style="display: none;">
+                <table class="data-table alert-table" id="overBudgetTable">
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            <th>Estimated Budget</th>
+                            <th>Total Cost</th>
+                            <th>Overrun Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overBudgetBody">
+                        <!-- Over-budget projects will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- No Over-Budget Message -->
+            <div id="noOverBudgetMessage" class="info-message">
+                <p>✓ All projects are within budget!</p>
+            </div>
+        </section>
+
+        <!-- Financial Summary Statistics -->
+        <section class="section financial-summary">
+            <div class="section-header">
+                <h2>Financial Summary</h2>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Budget Allocated</div>
+                    <div class="stat-value" id="totalBudget">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Cost Incurred</div>
+                    <div class="stat-value" id="totalCost">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Remaining Budget</div>
+                    <div class="stat-value" id="remainingBudget">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Budget Utilization</div>
+                    <div class="stat-value" id="budgetUtilization">0%</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SmartSite. Construction Area Management System.</p>
+    </footer>
+
+    <script src="js/finance.js"></script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workers - Area Management System</title>
+    <link rel="stylesheet" href="/css/workers.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">SmartSite</span>
+            </div>
+            <div class="nav-right">
+                <span id="userInfo" class="user-info"></span>
+                <a href="/engineer-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/api/auth/logout" class="nav-link logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Loading State -->
+        <div id="loadingSpinner" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading workers data...</p>
+        </div>
+
+        <!-- Workers Management Content -->
+        <div id="workersContent" style="display: none;">
+            
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Workers</h1>
+                    <p class="page-subtitle">Workforce Management</p>
+                </div>
+                <div class="header-actions">
+                    <a href="/engineer-dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+                </div>
+            </div>
+
+            <!-- Filter & Search Section -->
+            <section class="filter-section">
+                <div class="filter-group">
+                    <!-- Search by Worker Name -->
+                    <div class="filter-item">
+                        <label for="searchWorker">Search Worker:</label>
+                        <input 
+                            type="text" 
+                            id="searchWorker" 
+                            class="search-input" 
+                            placeholder="Enter worker name..."
+                        >
+                    </div>
+
+                    <!-- Filter by Skill -->
+                    <div class="filter-item">
+                        <label for="filterSkill">Filter by Skill:</label>
+                        <select id="filterSkill" class="filter-select">
+                            <option value="">All Skills</option>
+                            <option value="Mason">Mason</option>
+                            <option value="Carpenter">Carpenter</option>
+                            <option value="Electrician">Electrician</option>
+                            <option value="Plumber">Plumber</option>
+                            <option value="Laborer">Laborer</option>
+                            <option value="Welder">Welder</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter by Project/Area -->
+                    <div class="filter-item">
+                        <label for="filterProject">Filter by Project:</label>
+                        <select id="filterProject" class="filter-select">
+                            <option value="">All Projects</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter by Status -->
+                    <div class="filter-item">
+                        <label for="filterStatus">Filter by Status:</label>
+                        <select id="filterStatus" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="Assigned">Assigned</option>
+                            <option value="Unassigned">Unassigned</option>
+                        </select>
+                    </div>
+
+                    <!-- Reset Button -->
+                    <button id="resetFilters" class="btn btn-secondary filter-reset">Reset Filters</button>
+                </div>
+            </section>
+
+            <!-- Workers Table Section -->
+            <section class="workers-section">
+                <div class="section-header">
+                    <h2>All Workers</h2>
+                    <span id="workerCount" class="worker-count">0 workers</span>
+                </div>
+
+                <!-- Table Container -->
+                <div class="table-responsive">
+                    <table class="workers-table">
+                        <thead>
+                            <tr>
+                                <th>Worker Name</th>
+                                <th>Skill</th>
+                                <th>Assigned Project</th>
+                                <th>Current Task</th>
+                                <th>Cost per Day</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workersTableBody">
+                            <!-- Table rows will be dynamically populated -->
+                        </tbody>
+                    </table>
+                    <div id="noDataMessage" class="no-data" style="display: none;">
+                        <p>No workers found matching your filters.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal: Assign Task -->
+    <div id="assignTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Assign Task</h2>
+                <button class="modal-close" onclick="closeAssignTaskModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="assignTaskForm">
+                    <div class="form-group">
+                        <label for="taskWorkerName">Worker:</label>
+                        <input type="text" id="taskWorkerName" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskSelect">Select Task:</label>
+                        <select id="taskSelect" class="form-control" required>
+                            <option value="">-- Select a Task --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Task Description:</label>
+                        <textarea id="taskDescription" class="form-control" rows="3" disabled></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAssignTaskModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveAssignTask()">Assign Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Reassign Project -->
+    <div id="reassignProjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Reassign Project</h2>
+                <button class="modal-close" onclick="closeReassignProjectModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="reassignProjectForm">
+                    <div class="form-group">
+                        <label for="projectWorkerName">Worker:</label>
+                        <input type="text" id="projectWorkerName" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="currentProject">Current Project:</label>
+                        <input type="text" id="currentProject" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="newProjectSelect">New Project:</label>
+                        <select id="newProjectSelect" class="form-control" required>
+                            <option value="">-- Select a Project --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="retainTask"> Keep current task assignment
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeReassignProjectModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveReassignProject()">Reassign Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/workers.js"></script>
+</body>
+</html>

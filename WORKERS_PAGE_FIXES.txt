@@ -1,0 +1,174 @@
+/**
+ * FIXES APPLIED - Workers Management Page
+ * 
+ * Issue: "Error loading worker data. Please refresh the page."
+ * Root Cause: Missing database schema and API endpoints
+ * 
+ * CHANGES MADE:
+ */
+
+// ============================================
+// 1. BACKEND MODEL UPDATE
+// ============================================
+// File: backend/models/worker.py
+// Added: current_task_id field to Worker model
+// 
+// Added line:
+//   current_task_id = Column(Integer, ForeignKey('Task.task_id', ondelete='SET NULL'), nullable=True)
+// 
+// This allows workers to be assigned to tasks
+
+// ============================================
+// 2. BACKEND SCHEMA UPDATE
+// ============================================
+// File: backend/schemas/worker_schema.py
+// Added: current_task_id field to WorkerBase schema
+// 
+// Added line in WorkerBase class:
+//   current_task_id: Optional[int] = None
+// 
+// This serializes the task assignment in API responses
+
+// ============================================
+// 3. BACKEND API ENDPOINTS
+// ============================================
+// File: backend/routes/worker_routes.py
+// Added two new endpoints:
+// 
+// PUT /api/workers/{worker_id}/task
+//   - Assigns a task to a worker
+//   - Body: { "task_id": int }
+//   - Returns: Updated worker with task_id
+// 
+// PUT /api/workers/{worker_id}/area
+//   - Reassigns a worker to a different area
+//   - Body: { "area_id": int, "retain_task": bool (optional) }
+//   - Returns: Updated worker with new area_id
+
+// ============================================
+// 4. FRONTEND ERROR HANDLING
+// ============================================
+// File: frontend/js/workers.js
+// Enhanced: loadWorkerData() function with detailed logging
+// 
+// Changes:
+//   - Added console.log statements for debugging
+//   - Improved error messages with HTTP status codes
+//   - Better error display UI with refresh button
+//   - Token validation check
+// 
+// This helps diagnose API connection issues
+
+// ============================================
+// DATABASE MIGRATION REQUIRED
+// ============================================
+// To apply the schema changes, run this SQL on your MySQL database:
+// 
+// ALTER TABLE `Worker` 
+// ADD COLUMN current_task_id INT NULL,
+// ADD FOREIGN KEY (current_task_id) REFERENCES `Task` (task_id) ON DELETE SET NULL;
+// 
+// OR use the provided migration script:
+// python backend/migrate_worker_table.py
+
+// ============================================
+// WORKFLOW SUMMARY
+// ============================================
+// 
+// 1. User opens /workers.html
+// 2. loadWorkerData() is called
+// 3. API requests are made:
+//    - GET /api/workers → Fetches all workers with their area and task assignments
+//    - GET /api/areas → Fetches all project areas
+//    - GET /api/tasks → Fetches all available tasks
+// 
+// 4. Data is displayed in table with filters:
+//    - Filter by skill
+//    - Filter by assigned project/area
+//    - Filter by status (assigned/unassigned)
+//    - Search by worker name
+// 
+// 5. User can perform actions:
+//    - Click "Assign Task" → Opens modal to select and assign a task
+//    - Click "Reassign Project" → Opens modal to reassign worker to different area
+// 
+// 6. Upon action completion:
+//    - API call is made to update worker
+//    - Data is reloaded
+//    - Table is refreshed with new information
+
+// ============================================
+// TESTING THE FIX
+// ============================================
+// 
+// 1. Run database migration (if not already done):
+//    cd backend
+//    python migrate_worker_table.py
+// 
+// 2. Ensure backend is running:
+//    uvicorn main:app --reload
+// 
+// 3. Navigate to /workers.html in browser
+// 
+// 4. Check browser console (F12 → Console tab) for detailed logs:
+//    - Should see "Workers page loaded"
+//    - Should see "Workers loaded: X"
+//    - Should see "Areas loaded: X"
+//    - Should see "Tasks loaded: X"
+// 
+// 5. If errors still appear:
+//    - Check the error message in console
+//    - Verify MySQL is running
+//    - Verify database contains sample data
+//    - Check that authentication token is valid
+
+// ============================================
+// API ENDPOINTS REFERENCE
+// ============================================
+// 
+// GET /api/workers
+//   Returns: List of all workers with current_area_id and current_task_id
+//   Example response:
+//   [
+//     {
+//       "worker_id": 1,
+//       "name": "John Doe",
+//       "skill": "Mason",
+//       "cost_per_day": 150.00,
+//       "contact": "9876543210",
+//       "current_area_id": 1,
+//       "current_task_id": 5
+//     }
+//   ]
+// 
+// GET /api/areas
+//   Returns: List of all areas/projects
+//   Example response:
+//   [
+//     {
+//       "area_id": 1,
+//       "name": "Foundation",
+//       "location": "North Wing",
+//       ...
+//     }
+//   ]
+// 
+// GET /api/tasks
+//   Returns: List of all tasks
+//   Example response:
+//   [
+//     {
+//       "task_id": 1,
+//       "title": "Digging",
+//       "description": "Foundation digging work",
+//       ...
+//     }
+//   ]
+// 
+// PUT /api/workers/{worker_id}/task
+//   Request body: { "task_id": 5 }
+//   Returns: Updated worker object
+// 
+// PUT /api/workers/{worker_id}/area
+//   Request body: { "area_id": 2, "retain_task": true }
+//   Returns: Updated worker object

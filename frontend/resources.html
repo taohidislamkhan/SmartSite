@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources - Area Management System</title>
+    <link rel="stylesheet" href="/css/resources.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">SmartSite</span>
+            </div>
+            <div class="nav-right">
+                <span id="userInfo" class="user-info"></span>
+                <a href="/engineer-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/api/auth/logout" class="nav-link logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Loading State -->
+        <div id="loadingSpinner" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading resources data...</p>
+        </div>
+
+        <!-- Resources Content -->
+        <div id="resourcesContent" style="display: none;">
+            
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Resources</h1>
+                    <p class="page-subtitle">Materials & Equipment Management</p>
+                </div>
+                <div class="header-actions">
+                    <a href="/engineer-dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+                </div>
+            </div>
+
+            <!-- ========================================
+                 MATERIALS SECTION
+                 ======================================== -->
+            <section class="resources-section materials-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Materials</h2>
+                        <p class="section-subtitle">Consumable Resources & Inventory</p>
+                    </div>
+                    <div class="section-stats">
+                        <span class="stat-badge">Total: <span id="materialCount">0</span></span>
+                        <span class="stat-badge warning">Low Stock: <span id="lowStockCount">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Filter Section for Materials -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label for="searchMaterial">Search Material:</label>
+                            <input 
+                                type="text" 
+                                id="searchMaterial" 
+                                class="search-input" 
+                                placeholder="Enter material name..."
+                            >
+                        </div>
+                        <div class="filter-item">
+                            <label for="filterMaterialProject">Filter by Project:</label>
+                            <select id="filterMaterialProject" class="filter-select">
+                                <option value="">All Projects</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="filterStockStatus">Stock Status:</label>
+                            <select id="filterStockStatus" class="filter-select">
+                                <option value="">All</option>
+                                <option value="low">Low Stock</option>
+                                <option value="adequate">Adequate</option>
+                            </select>
+                        </div>
+                        <button id="resetMaterialFilters" class="btn btn-secondary filter-reset">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Materials Table -->
+                <div class="table-responsive">
+                    <table class="resources-table">
+                        <thead>
+                            <tr>
+                                <th>Material Name</th>
+                                <th>Assigned Project</th>
+                                <th>Stock Level</th>
+                                <th>Reorder Threshold</th>
+                                <th>Unit Cost</th>
+                                <th>Status</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materialsTableBody">
+                            <!-- Table rows will be dynamically populated -->
+                        </tbody>
+                    </table>
+                    <div id="noMaterialsMessage" class="no-data" style="display: none;">
+                        <p>No materials found matching your filters.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 EQUIPMENT SECTION
+                 ======================================== -->
+            <section class="resources-section equipment-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Equipment</h2>
+                        <p class="section-subtitle">Reusable Assets & Tools</p>
+                    </div>
+                    <div class="section-stats">
+                        <span class="stat-badge">Total: <span id="equipmentCount">0</span></span>
+                        <span class="stat-badge success">Available: <span id="availableCount">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Filter Section for Equipment -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label for="searchEquipment">Search Equipment:</label>
+                            <input 
+                                type="text" 
+                                id="searchEquipment" 
+                                class="search-input" 
+                                placeholder="Enter equipment name..."
+                            >
+                        </div>
+                        <div class="filter-item">
+                            <label for="filterEquipmentProject">Filter by Project:</label>
+                            <select id="filterEquipmentProject" class="filter-select">
+                                <option value="">All Projects</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="filterStatus">Filter by Status:</label>
+                            <select id="filterStatus" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="available">Available</option>
+                                <option value="in-use">In Use</option>
+                                <option value="maintenance">Under Maintenance</option>
+                                <option value="retired">Retired</option>
+                            </select>
+                        </div>
+                        <button id="resetEquipmentFilters" class="btn btn-secondary filter-reset">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Equipment Table -->
+                <div class="table-responsive">
+                    <table class="resources-table">
+                        <thead>
+                            <tr>
+                                <th>Equipment Name</th>
+                                <th>Serial Number</th>
+                                <th>Status</th>
+                                <th>Assigned Project</th>
+                                <th>Maintenance Notes</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody id="equipmentTableBody">
+                            <!-- Table rows will be dynamically populated -->
+                        </tbody>
+                    </table>
+                    <div id="noEquipmentMessage" class="no-data" style="display: none;">
+                        <p>No equipment found matching your filters.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/js/resources.js"></script>
+</body>
+</html>

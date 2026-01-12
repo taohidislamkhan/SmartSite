@@ -1,0 +1,591 @@
+/**
+ * Resources Management Page Styles
+ * 
+ * DBMS Context:
+ * - Material table contains: material_id, name, quantity, unit, reorder_level, cost_per_unit, area_id
+ * - Equipment table contains: equipment_id, name, serial_number, status, area_id, maintenance_notes
+ * - Both have relationships to Area table for project assignment
+ * - Status tracking for operational visibility
+ * 
+ * Design Approach:
+ * - Two distinct sections for materials and equipment
+ * - Clear visual hierarchy with status indicators
+ * - Color-coded badges for quick status scanning
+ * - Responsive table design with filtering capabilities
+ * - Professional layout for reporting and documentation
+ */
+
+:root {
+    /* Colors */
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --info-color: #3498db;
+    --light-bg: #ecf0f1;
+    --card-bg: #ffffff;
+    --text-dark: #2c3e50;
+    --text-light: #7f8c8d;
+    --border-color: #bdc3c7;
+    
+    /* Status Colors */
+    --status-available: #27ae60;
+    --status-in-use: #3498db;
+    --status-maintenance: #f39c12;
+    --status-retired: #95a5a6;
+    --status-low-stock: #e74c3c;
+    --status-adequate: #27ae60;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 2.5rem;
+    
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-base: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+    
+    /* Transitions */
+    --transition: all 0.3s ease;
+}
+
+/* ============================================
+   GLOBAL STYLES
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+/* ============================================
+   NAVIGATION BAR
+   ============================================ */
+
+.navbar {
+    background-color: var(--primary-color);
+    color: white;
+    padding: var(--spacing-md) 0;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-xl);
+    font-weight: bold;
+}
+
+.logo-icon {
+    font-size: 24px;
+}
+
+.logo-text {
+    color: white;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.user-info {
+    font-size: var(--font-size-base);
+    color: #ecf0f1;
+}
+
+.nav-link {
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-link.logout {
+    background-color: var(--accent-color);
+    padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.nav-link.logout:hover {
+    background-color: #c0392b;
+    color: white;
+}
+
+/* ============================================
+   MAIN CONTAINER
+   ============================================ */
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+}
+
+/* ============================================
+   PAGE HEADER
+   ============================================ */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+    background-color: var(--card-bg);
+    padding: var(--spacing-lg);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+}
+
+.page-title {
+    font-size: var(--font-size-2xl);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-xs);
+}
+
+.page-subtitle {
+    color: var(--text-light);
+    font-size: var(--font-size-base);
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* ============================================
+   BUTTONS & FORMS
+   ============================================ */
+
+.btn {
+    padding: var(--spacing-xs) var(--spacing-md);
+    border: none;
+    border-radius: 4px;
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background-color: var(--text-light);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #6c7a7d;
+    box-shadow: var(--shadow-md);
+}
+
+.search-input,
+.filter-select {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+}
+
+.search-input:focus,
+.filter-select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* ============================================
+   RESOURCES SECTIONS
+   ============================================ */
+
+.resources-section {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 2px solid var(--light-bg);
+}
+
+.section-header h2 {
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-xs);
+}
+
+.section-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--text-light);
+}
+
+.section-stats {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.stat-badge {
+    background-color: var(--light-bg);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.stat-badge.warning {
+    background-color: #ffe6e6;
+    color: var(--accent-color);
+}
+
+.stat-badge.success {
+    background-color: #e6f7ed;
+    color: var(--success-color);
+}
+
+.stat-badge span {
+    font-weight: 700;
+}
+
+/* ============================================
+   FILTER SECTION
+   ============================================ */
+
+.filter-section {
+    background-color: #f9fafb;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--light-bg);
+}
+
+.filter-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-md);
+    align-items: flex-end;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.filter-item label {
+    font-weight: 500;
+    color: var(--text-dark);
+    font-size: var(--font-size-base);
+}
+
+.filter-reset {
+    align-self: flex-end;
+    white-space: nowrap;
+}
+
+/* ============================================
+   TABLE STYLES
+   ============================================ */
+
+.table-responsive {
+    overflow-x: auto;
+    max-height: 700px;
+    overflow-y: auto;
+}
+
+.resources-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-base);
+}
+
+.resources-table thead {
+    background-color: var(--light-bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.resources-table th {
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.resources-table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--light-bg);
+    color: var(--text-dark);
+}
+
+.resources-table tbody tr {
+    transition: var(--transition);
+}
+
+.resources-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.resources-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ============================================
+   STATUS BADGES
+   ============================================ */
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 100px;
+}
+
+/* Material Stock Status */
+.status-low-stock {
+    background-color: #ffe6e6;
+    color: var(--accent-color);
+    border: 1px solid #ffcccc;
+}
+
+.status-adequate {
+    background-color: #e6f7ed;
+    color: var(--success-color);
+    border: 1px solid #c6e9d8;
+}
+
+/* Equipment Status */
+.status-available {
+    background-color: #e6f7ed;
+    color: var(--success-color);
+    border: 1px solid #c6e9d8;
+}
+
+.status-in-use {
+    background-color: #e3f2fd;
+    color: var(--info-color);
+    border: 1px solid #c6d8f0;
+}
+
+.status-maintenance {
+    background-color: #fff3e0;
+    color: var(--warning-color);
+    border: 1px solid #ffe0b2;
+}
+
+.status-retired {
+    background-color: #eceff1;
+    color: var(--text-light);
+    border: 1px solid #cfd8dc;
+}
+
+/* ============================================
+   LOW STOCK INDICATOR
+   ============================================ */
+
+.material-row-low-stock {
+    background-color: #fffbfb;
+}
+
+.material-row-low-stock td {
+    border-left: 4px solid var(--accent-color);
+}
+
+/* ============================================
+   NO DATA MESSAGE
+   ============================================ */
+
+.no-data {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--text-light);
+    font-size: var(--font-size-lg);
+}
+
+/* ============================================
+   LOADING SPINNER
+   ============================================ */
+
+.loading-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    gap: var(--spacing-md);
+}
+
+.spinner {
+    border: 4px solid var(--light-bg);
+    border-top: 4px solid var(--secondary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-overlay p {
+    color: var(--text-light);
+    font-size: var(--font-size-lg);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .container {
+        padding: var(--spacing-md);
+    }
+
+    .filter-group {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .resources-table {
+        font-size: 13px;
+    }
+
+    .resources-table th,
+    .resources-table td {
+        padding: var(--spacing-sm);
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+
+    .section-stats {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions .btn {
+        flex: 1;
+    }
+
+    .filter-group {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-reset {
+        align-self: stretch;
+    }
+
+    .table-responsive {
+        max-height: none;
+    }
+
+    .resources-table {
+        font-size: 12px;
+    }
+
+    .resources-table th,
+    .resources-table td {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .section-header h2 {
+        font-size: var(--font-size-lg);
+    }
+
+    .stat-badge {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Incidents - SmartSite</title>
+    <link rel="stylesheet" href="css/safety.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">SmartSite</div>
+            <div class="navbar-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="safety.html" class="nav-link active">Safety</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <span id="userInfo" class="user-info">User</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- SECTION A: PAGE HEADER -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1>Safety Incidents</h1>
+                <p class="subtitle">Health & Safety Compliance</p>
+            </div>
+            <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+        </header>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading safety incidents...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <!-- SECTION B: FILTER CONTROLS -->
+        <section class="section filters-section">
+            <div class="section-header">
+                <h2>Filter Incidents</h2>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filterProject">Project:</label>
+                    <select id="filterProject" class="filter-select">
+                        <option value="">All Projects</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterSeverity">Severity:</label>
+                    <select id="filterSeverity" class="filter-select">
+                        <option value="">All Severities</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button id="clearFiltersBtn" class="btn btn-secondary">Clear Filters</button>
+                </div>
+            </div>
+
+            <!-- Safety Statistics -->
+            <div class="safety-stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="totalIncidentsCount">0</div>
+                    <div class="stat-label">Total Incidents</div>
+                </div>
+                <div class="stat-box high">
+                    <div class="stat-number" id="highSeverityCount">0</div>
+                    <div class="stat-label">High Severity</div>
+                </div>
+                <div class="stat-box medium">
+                    <div class="stat-number" id="mediumSeverityCount">0</div>
+                    <div class="stat-label">Medium Severity</div>
+                </div>
+                <div class="stat-box low">
+                    <div class="stat-number" id="lowSeverityCount">0</div>
+                    <div class="stat-label">Low Severity</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION C: SAFETY INCIDENTS TABLE -->
+        <section class="section incidents-section">
+            <div class="section-header">
+                <h2>Safety Incident Records</h2>
+                <p class="section-description">
+                    All safety incidents tracked per project. These records are essential for compliance reporting,
+                    risk assessment, and continuous improvement in health and safety management.
+                </p>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table" id="incidentsTable">
+                    <thead>
+                        <tr>
+                            <th>Project / Area</th>
+                            <th>Incident Date</th>
+                            <th>Type</th>
+                            <th>Severity</th>
+                            <th>Description</th>
+                            <th>Reported By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="incidentsTableBody">
+                        <!-- Incidents will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- No Incidents Message -->
+            <div id="noIncidentsMessage" class="info-message" style="display: none;">
+                <p>✓ No safety incidents recorded. Maintain this excellent safety record!</p>
+            </div>
+        </section>
+
+        <!-- SECTION D: INCIDENT DETAILS MODAL -->
+        <div id="incidentModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Incident Details</h2>
+                    <button class="close-btn" onclick="closeIncidentModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Incident details will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Safety Information Section -->
+        <section class="section info-section">
+            <div class="section-header">
+                <h2>Safety Compliance Information</h2>
+            </div>
+
+            <div class="info-content">
+                <div class="info-card">
+                    <h3>Why Track Safety Incidents?</h3>
+                    <p>
+                        Safety incident tracking is a critical component of occupational health and safety management.
+                        By recording all incidents—from minor near-misses to serious accidents—organizations can identify
+                        patterns, implement preventive measures, and create safer work environments.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3>Severity Levels</h3>
+                    <ul>
+                        <li><strong>Low:</strong> Minor incidents with no or minimal injury (near-misses, minor cuts)</li>
+                        <li><strong>Medium:</strong> Moderate incidents requiring first aid or medical attention (minor fractures, burns)</li>
+                        <li><strong>High:</strong> Serious incidents with significant injury or potential for serious injury (hospitalizable injuries, fatalities)</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>Incident Types</h3>
+                    <p>
+                        The SafetyIncident table stores records of various incident types including falls, electrical hazards,
+                        equipment failures, and environmental hazards. Each incident is linked to a specific project (Area)
+                        for easy compliance tracking and risk assessment.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Compliance Metrics -->
+        <section class="section metrics-section">
+            <div class="section-header">
+                <h2>Compliance Metrics</h2>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Reporting Completeness</div>
+                    <div class="metric-value" id="reportingCompleteness">100%</div>
+                    <p class="metric-description">All incidents properly documented</p>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Average Response Time</div>
+                    <div class="metric-value" id="responseTime">N/A</div>
+                    <p class="metric-description">Time from incident to report</p>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Projects with High Severity</div>
+                    <div class="metric-value" id="projectsWithHighSeverity">0</div>
+                    <p class="metric-description">Projects that need attention</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SmartSite. Construction Area Management System.</p>
+    </footer>
+
+    <script src="js/safety.js"></script>
+</body>
+</html>
