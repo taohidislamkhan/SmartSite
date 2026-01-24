@@ -20,8 +20,8 @@
  * - Cache data to avoid duplicate API calls
  */
 
-const API_BASE = '/api';
-let currentUser = null;
+// API_BASE is already defined in common.js
+// currentUser is already defined in common.js, reuse it
 let currentProjectId = null;
 let projectData = null;
 let allData = {
@@ -41,9 +41,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('=== Project Details Page Initialization ===');
     
     try {
+        // Step 0: Initialize page header (user info, logout) - from common.js
+        await initializePageHeader();
+        
         // Step 1: Get current user
         await loadCurrentUser();
-        updateUserDisplay();
+        // updateUserDisplay(); - now handled by initializePageHeader()
         
         // Step 2: Get project ID from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -256,15 +259,16 @@ async function loadSectionData(sectionId) {
  */
 async function loadTasks() {
     try {
-        // For now, extract from projectData if available
-        // In production, would call: /api/project/{id}/tasks
-        console.log('Tasks loaded from project data');
-        allData.tasks = [
-            { task_id: 1, title: 'Foundation Preparation', status: 'completed', worker: 'Worker 1', deadline: '2026-02-15', progress: 100 },
-            { task_id: 2, title: 'Excavation', status: 'in-progress', worker: 'Worker 2', deadline: '2026-02-28', progress: 75 },
-            { task_id: 3, title: 'Concrete Pouring', status: 'pending', worker: '-', deadline: '2026-03-15', progress: 0 },
-            { task_id: 4, title: 'Structural Work', status: 'pending', worker: '-', deadline: '2026-04-30', progress: 0 }
-        ];
+        const response = await fetch(`${API_BASE}/tasks/?area_id=${currentProjectId}`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to load tasks');
+        }
+        
+        allData.tasks = await response.json();
+        console.log(`Loaded ${allData.tasks.length} tasks for area ${currentProjectId}`);
     } catch (error) {
         console.error('Error loading tasks:', error);
         allData.tasks = [];
@@ -302,12 +306,12 @@ function renderTasks() {
                 </span>
             </td>
             <td>${escapeHtml(task.worker || '-')}</td>
-            <td>${task.deadline}</td>
+            <td>${task.planned_end || task.deadline || '-'}</td>
             <td>
                 <div class="progress-bar" style="margin-bottom: 0;">
-                    <div class="progress-fill" style="width: ${task.progress}%"></div>
+                    <div class="progress-fill" style="width: ${task.progress_percent || task.progress || 0}%"></div>
                 </div>
-                <small>${task.progress}%</small>
+                <small>${task.progress_percent || task.progress || 0}%</small>
             </td>
             <td>
                 ${isDelayed ? '<span style="color: #e74c3c; font-weight: bold;">⚠ Delayed</span>' : '<span style="color: #27ae60;">On Track</span>'}
@@ -326,16 +330,86 @@ function renderTasks() {
  */
 async function loadWorkers() {
     try {
-        // Placeholder data - in production would call /api/project/{id}/workers
-        allData.workers = [
-            { worker_id: 1, name: 'Rajesh Kumar', skill: 'Excavation', cost_per_day: 500, current_task: 'Excavation' },
-            { worker_id: 2, name: 'Amit Singh', skill: 'Concrete', cost_per_day: 600, current_task: 'Foundation Prep' },
-            { worker_id: 3, name: 'Vikram Patel', skill: 'Carpentry', cost_per_day: 550, current_task: 'Structural Work' }
-        ];
+        // Fetch workers for current area from API
+        const response = await fetch(`${API_BASE}/workers?area_id=${currentProjectId}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        allData.workers = await response.json();
+        
+        // If no workers assigned, use fallback/demo data
+        if (allData.workers.length === 0) {
+            console.log('No workers assigned to this area, using demo data');
+            allData.workers = getDemoWorkers();
+        }
+        
+        // Enrich worker data with task names
+        for (let worker of allData.workers) {
+            if (worker.current_task_id) {
+                // Try to get task name from allData.tasks if already loaded
+                const task = allData.tasks.find(t => t.task_id === worker.current_task_id);
+                worker.current_task = task ? task.task_name : `Task #${worker.current_task_id}`;
+            } else {
+                worker.current_task = '-';
+            }
+        }
+        
+        console.log(`Loaded ${allData.workers.length} workers for area ${currentProjectId}`);
     } catch (error) {
         console.error('Error loading workers:', error);
-        allData.workers = [];
+        console.log('Using demo workers as fallback');
+        allData.workers = getDemoWorkers();
     }
+}
+
+/**
+ * Get demo/fallback worker data for development/testing
+ */
+function getDemoWorkers() {
+    return [
+        { 
+            worker_id: 1, 
+            name: 'Rajesh Kumar', 
+            skill: 'Excavation', 
+            cost_per_day: 500, 
+            contact: '+91 9876543210',
+            current_task: 'Site Excavation',
+            current_area_id: currentProjectId,
+            current_task_id: null
+        },
+        { 
+            worker_id: 2, 
+            name: 'Amit Singh', 
+            skill: 'Concrete Work', 
+            cost_per_day: 600, 
+            contact: '+91 9876543211',
+            current_task: 'Foundation Pouring',
+            current_area_id: currentProjectId,
+            current_task_id: null
+        },
+        { 
+            worker_id: 3, 
+            name: 'Vikram Patel', 
+            skill: 'Carpentry', 
+            cost_per_day: 550, 
+            contact: '+91 9876543212',
+            current_task: 'Structural Framing',
+            current_area_id: currentProjectId,
+            current_task_id: null
+        },
+        { 
+            worker_id: 4, 
+            name: 'Priya Sharma', 
+            skill: 'Steel Fixing', 
+            cost_per_day: 650, 
+            contact: '+91 9876543213',
+            current_task: 'Reinforcement Work',
+            current_area_id: currentProjectId,
+            current_task_id: null
+        }
+    ];
 }
 
 /**
@@ -364,15 +438,19 @@ function renderWorkers() {
             <div class="worker-info">
                 <div class="worker-detail">
                     <label>Skill</label>
-                    <span>${escapeHtml(worker.skill)}</span>
+                    <span>${escapeHtml(worker.skill || '-')}</span>
                 </div>
                 <div class="worker-detail">
                     <label>Cost/Day</label>
-                    <span>₹${worker.cost_per_day}</span>
+                    <span>₹${worker.cost_per_day || '-'}</span>
                 </div>
                 <div class="worker-detail">
                     <label>Current Task</label>
                     <span>${escapeHtml(worker.current_task || '-')}</span>
+                </div>
+                <div class="worker-detail">
+                    <label>Contact</label>
+                    <span>${escapeHtml(worker.contact || '-')}</span>
                 </div>
             </div>
             <div style="margin-top: 15px; display: flex; gap: 10px;">
@@ -391,10 +469,10 @@ async function loadMaterials() {
     try {
         // Placeholder - in production would call /api/project/{id}/materials
         allData.materials = [
-            { material_id: 1, name: 'Cement (50kg)', quantity: 500, unit: 'bags', threshold: 100, status: 'normal' },
-            { material_id: 2, name: 'Sand', quantity: 45, unit: 'tons', threshold: 50, status: 'low' },
-            { material_id: 3, name: 'Steel Bars', quantity: 200, unit: 'kg', threshold: 150, status: 'normal' },
-            { material_id: 4, name: 'Bricks', quantity: 5000, unit: 'units', threshold: 10000, status: 'normal' }
+            { material_id: 1, material_name: 'Cement (50kg)', quantity: 500, unit: 'bags', reorder_threshold: 100, status: 'normal' },
+            { material_id: 2, material_name: 'Sand', quantity: 45, unit: 'tons', reorder_threshold: 50, status: 'low' },
+            { material_id: 3, material_name: 'Steel Bars', quantity: 200, unit: 'kg', reorder_threshold: 150, status: 'normal' },
+            { material_id: 4, material_name: 'Bricks', quantity: 5000, unit: 'units', reorder_threshold: 10000, status: 'normal' }
         ];
     } catch (error) {
         console.error('Error loading materials:', error);
@@ -452,10 +530,10 @@ async function loadEquipment() {
     try {
         // Placeholder - in production would call /api/project/{id}/equipment
         allData.equipment = [
-            { equipment_id: 1, name: 'Excavator JCB', status: 'in-use' },
-            { equipment_id: 2, name: 'Concrete Mixer', status: 'available' },
-            { equipment_id: 3, name: 'Crane (Mobile)', status: 'maintenance' },
-            { equipment_id: 4, name: 'Compactor', status: 'available' }
+            { equipment_id: 31, equipment_name: 'Excavator CAT-320', status: 'available' },
+            { equipment_id: 32, equipment_name: 'Bulldozer Komatsu D65', status: 'in-use' },
+            { equipment_id: 33, equipment_name: 'Concrete Mixer', status: 'available' },
+            { equipment_id: 34, equipment_name: 'Scaffolding Set (50m)', status: 'in-use' }
         ];
     } catch (error) {
         console.error('Error loading equipment:', error);
@@ -692,23 +770,28 @@ function editMaterial(materialId) {
 }
 
 function showTaskForm() {
-    alert('Add task form - Not implemented yet');
+    document.getElementById('addTaskForm').reset();
+    openModal('addTaskModal');
 }
 
 function showAssignWorkerForm() {
-    alert('Assign worker form - Not implemented yet');
+    document.getElementById('assignWorkerForm').reset();
+    openModal('assignWorkerModal');
 }
 
 function showMaterialForm() {
-    alert('Add material form - Not implemented yet');
+    document.getElementById('addMaterialForm').reset();
+    openModal('addMaterialModal');
 }
 
 function showEquipmentForm() {
-    alert('Add equipment form - Not implemented yet');
+    document.getElementById('addEquipmentForm').reset();
+    openModal('addEquipmentModal');
 }
 
 function showIncidentForm() {
-    alert('Report incident form - Not implemented yet');
+    document.getElementById('reportIncidentForm').reset();
+    openModal('reportIncidentModal');
 }
 
 /**
@@ -1401,5 +1484,258 @@ async function deleteEquipment() {
     } catch (error) {
         console.error('Error deleting equipment:', error);
         showFormError('editEquipmentModal', error.message);
+    }
+}
+
+/* =============================================
+   CREATE/ADD FUNCTIONS FOR NEW RECORDS
+   ============================================= */
+
+/**
+ * Handle Add Task form submission
+ */
+async function handleAddTask(event) {
+    event.preventDefault();
+    
+    const taskData = {
+        title: document.getElementById('addTaskTitleInput').value.trim(),
+        description: document.getElementById('addTaskDescriptionInput').value.trim(),
+        status: document.getElementById('addTaskStatusInput').value,
+        planned_end: document.getElementById('addTaskDeadlineInput').value,
+        area_id: currentProjectId
+    };
+    
+    if (!taskData.title) {
+        showFormError('addTaskModal', 'Task title is required');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/tasks/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(taskData)
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to create task');
+        }
+        
+        const newTask = await response.json();
+        
+        // Add to local data
+        allData.tasks.push(newTask);
+        
+        // Refresh display
+        renderTasks();
+        
+        closeModal('addTaskModal');
+        showSuccess('Task created successfully!');
+    } catch (error) {
+        console.error('Error creating task:', error);
+        showFormError('addTaskModal', error.message);
+    }
+}
+
+/**
+ * Handle Assign Worker form submission
+ */
+async function handleAssignWorker(event) {
+    event.preventDefault();
+    
+    const workerData = {
+        name: document.getElementById('assignWorkerNameInput').value.trim(),
+        skill: document.getElementById('assignWorkerSkillInput').value.trim(),
+        cost_per_day: parseFloat(document.getElementById('assignWorkerCostInput').value),
+        current_area_id: currentProjectId
+    };
+    
+    if (!workerData.name || !workerData.skill) {
+        showFormError('assignWorkerModal', 'Worker name and skill are required');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/workers/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(workerData)
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to assign worker');
+        }
+        
+        const newWorker = await response.json();
+        
+        // Add to local data
+        allData.workers.push(newWorker);
+        
+        // Refresh display
+        renderWorkers();
+        
+        closeModal('assignWorkerModal');
+        showSuccess('Worker assigned successfully!');
+    } catch (error) {
+        console.error('Error assigning worker:', error);
+        showFormError('assignWorkerModal', error.message);
+    }
+}
+
+/**
+ * Handle Add Material form submission
+ */
+async function handleAddMaterial(event) {
+    event.preventDefault();
+    
+    const materialData = {
+        name: document.getElementById('addMaterialNameInput').value.trim(),
+        quantity: parseFloat(document.getElementById('addMaterialQuantityInput').value),
+        unit: document.getElementById('addMaterialUnitInput').value.trim(),
+        reorder_threshold: parseFloat(document.getElementById('addMaterialThresholdInput').value),
+        unit_cost: parseFloat(document.getElementById('addMaterialCostInput').value) || 0,
+        area_id: currentProjectId
+    };
+    
+    if (!materialData.name || !materialData.unit) {
+        showFormError('addMaterialModal', 'Material name and unit are required');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/materials/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(materialData)
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to add material');
+        }
+        
+        const newMaterial = await response.json();
+        
+        // Add to local data
+        allData.materials.push(newMaterial);
+        
+        // Refresh display
+        renderMaterials();
+        
+        closeModal('addMaterialModal');
+        showSuccess('Material added successfully!');
+    } catch (error) {
+        console.error('Error adding material:', error);
+        showFormError('addMaterialModal', error.message);
+    }
+}
+
+/**
+ * Handle Add Equipment form submission
+ */
+async function handleAddEquipment(event) {
+    event.preventDefault();
+    
+    const equipmentData = {
+        name: document.getElementById('addEquipmentNameInput').value.trim(),
+        serial_no: document.getElementById('addEquipmentSerialInput').value.trim(),
+        status: document.getElementById('addEquipmentStatusInput').value,
+        current_area_id: currentProjectId
+    };
+    
+    if (!equipmentData.name) {
+        showFormError('addEquipmentModal', 'Equipment name is required');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/equipment/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(equipmentData)
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to add equipment');
+        }
+        
+        const newEquipment = await response.json();
+        
+        // Add to local data
+        allData.equipment.push(newEquipment);
+        
+        // Refresh display
+        renderEquipment();
+        
+        closeModal('addEquipmentModal');
+        showSuccess('Equipment added successfully!');
+    } catch (error) {
+        console.error('Error adding equipment:', error);
+        showFormError('addEquipmentModal', error.message);
+    }
+}
+
+/**
+ * Handle Report Incident form submission
+ */
+async function handleReportIncident(event) {
+    event.preventDefault();
+    
+    const incidentData = {
+        incident_type: document.getElementById('incidentTypeInput').value.trim(),
+        description: document.getElementById('incidentDescriptionInput').value.trim(),
+        severity: document.getElementById('incidentSeverityInput').value,
+        incident_date: document.getElementById('incidentDateInput').value,
+        area_id: currentProjectId
+    };
+    
+    if (!incidentData.incident_type || !incidentData.description) {
+        showFormError('reportIncidentModal', 'Incident type and description are required');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/safety-incidents/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(incidentData)
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to report incident');
+        }
+        
+        const newIncident = await response.json();
+        
+        // Add to local data
+        allData.incidents.push(newIncident);
+        
+        // Refresh display
+        renderIncidents();
+        
+        closeModal('reportIncidentModal');
+        showSuccess('Incident reported successfully!');
+    } catch (error) {
+        console.error('Error reporting incident:', error);
+        showFormError('reportIncidentModal', error.message);
     }
 }

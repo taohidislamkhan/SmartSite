@@ -27,6 +27,16 @@ class UserCreate(UserBase):
     password_confirm: str = Field(..., min_length=6)
     area_id: Optional[int] = None  # For workers only
     
+    # Engineer-specific fields
+    first_name: Optional[str] = Field(None, max_length=100)
+    last_name: Optional[str] = Field(None, max_length=100)
+    phone: Optional[str] = Field(None, max_length=30)
+    address: Optional[str] = Field(None, max_length=255)
+    
+    # Worker-specific fields (required for workers)
+    skill: Optional[str] = Field(None, max_length=100)
+    contact: Optional[str] = Field(None, max_length=30)  # Phone for workers
+    
     def validate_password_match(self) -> bool:
         """Ensure passwords match"""
         return self.password == self.password_confirm
@@ -37,6 +47,8 @@ class UserResponse(UserBase):
     user_id: int
     area_id: Optional[int] = None
     engineer_id: Optional[int] = None  # For engineers: ID from Engineer table
+    engineer_name: Optional[str] = None  # For engineers: Full name
+    engineer_first_name: Optional[str] = None  # For engineers: First name
     created_at: datetime
 
     class Config:
@@ -57,6 +69,8 @@ class LoginResponse(BaseModel):
     role: str
     area_id: Optional[int] = None
     engineer_id: Optional[int] = None  # For engineers: ID from Engineer table
+    engineer_name: Optional[str] = None  # For engineers: Full name
+    engineer_first_name: Optional[str] = None  # For engineers: First name
     message: str = "Login successful"
 
 

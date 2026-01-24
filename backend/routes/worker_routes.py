@@ -9,7 +9,11 @@ from sqlalchemy.exc import IntegrityError
 
 from database import SessionLocal
 from models.worker import Worker
-from schemas.worker_schema import WorkerCreate, WorkerResponse
+from models.task import Task
+from models.area import Area
+from models.user import User
+from schemas.worker_schema import WorkerCreate, WorkerResponse, WorkerTaskAssignment, WorkerAreaAssignment
+from routes.auth_routes import get_current_user
 
 router = APIRouter()
 
@@ -138,7 +142,7 @@ def delete_worker(worker_id: int, db: Session = Depends(get_db)):
 @router.put("/{worker_id}/task", response_model=WorkerResponse)
 def assign_task(
     worker_id: int,
-    task_data: dict,
+    task_assignment: WorkerTaskAssignment,
     db: Session = Depends(get_db)
 ):
     """
@@ -155,8 +159,7 @@ def assign_task(
         )
     
     try:
-        task_id = task_data.get("task_id")
-        worker.current_task_id = task_id
+        worker.current_task_id = task_assignment.task_id
         db.commit()
         db.refresh(worker)
         return worker
@@ -171,13 +174,13 @@ def assign_task(
 @router.put("/{worker_id}/area", response_model=WorkerResponse)
 def assign_area(
     worker_id: int,
-    area_data: dict,
+    area_assignment: WorkerAreaAssignment,
     db: Session = Depends(get_db)
 ):
     """
     PUT /workers/{worker_id}/area
     Reassign a worker to a different area
-    Body: { "area_id": int, "retain_task": bool (optional) }
+    Body: { "area_id": int }
     Returns: Updated WorkerResponse object
     """
     worker = db.query(Worker).filter(Worker.worker_id == worker_id).first()
@@ -188,15 +191,7 @@ def assign_area(
         )
     
     try:
-        area_id = area_data.get("area_id")
-        retain_task = area_data.get("retain_task", False)
-        
-        worker.current_area_id = area_id
-        
-        # If not retaining task, clear current task assignment
-        if not retain_task:
-            worker.current_task_id = None
-        
+        worker.current_area_id = area_assignment.area_id
         db.commit()
         db.refresh(worker)
         return worker
@@ -206,4 +201,75 @@ def assign_area(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Error reassigning worker to area"
         )
+
+
+@router.get("/current/assigned-tasks")
+def get_current_worker_tasks(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    GET /workers/current/assigned-tasks
+    Get all tasks assigned to the current logged-in worker
+    
+    Returns:
+    {
+        "worker": {...},
+        "area": {...},
+        "tasks": [...]
+    }
+    """
+    if current_user.role != 'worker':
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only workers can access their assigned tasks"
+        )
+    
+    # Find worker record linked to this user
+    worker = db.query(Worker).filter(Worker.user_id == current_user.user_id).first()
+    if not worker:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Worker profile not found for this user account"
+        )
+    
+    # Get area information
+    area = None
+    if worker.current_area_id:
+        area = db.query(Area).filter(Area.area_id == worker.current_area_id).first()
+    
+    # Get all tasks assigned to this worker
+    tasks = db.query(Task).filter(Task.assigned_worker_id == worker.worker_id).all()
+    
+    return {
+        "worker": {
+            "worker_id": worker.worker_id,
+            "name": worker.name,
+            "skill": worker.skill,
+            "cost_per_day": float(worker.cost_per_day or 0),
+            "current_area_id": worker.current_area_id,
+            "current_task_id": worker.current_task_id
+        },
+        "area": {
+            "area_id": area.area_id,
+            "name": area.name,
+            "location": area.location
+        } if area else None,
+        "tasks": [
+            {
+                "task_id": t.task_id,
+                "title": t.title,
+                "description": t.description,
+                "area_id": t.area_id,
+                "status": t.status,
+                "planned_start": t.planned_start.isoformat() if t.planned_start else None,
+                "planned_end": t.planned_end.isoformat() if t.planned_end else None,
+                "actual_start": t.actual_start.isoformat() if t.actual_start else None,
+                "actual_end": t.actual_end.isoformat() if t.actual_end else None,
+                "progress_percent": t.progress_percent,
+                "created_at": t.created_at.isoformat() if t.created_at else None
+            }
+            for t in tasks
+        ]
+    }
 

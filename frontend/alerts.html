@@ -4,30 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alerts - SmartSite</title>
+    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/alerts.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-brand">SmartSite</div>
-            <div class="navbar-menu">
-                <a href="dashboard.html" class="nav-link">Dashboard</a>
-                <a href="alerts.html" class="nav-link active">Alerts</a>
-                <a href="projects.html" class="nav-link">Projects</a>
-                <span id="userInfo" class="user-info">User</span>
+    <!-- ====================================================================
+         HEADER
+         ==================================================================== -->
+    <header>
+        <div class="header-left">
+            <span class="logo">🏗️</span>
+            <div>
+                <div class="logo-text">SmartSite</div>
+                <div class="logo-subtitle">Construction Management System</div>
             </div>
         </div>
-    </nav>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="engineerName">Engineer Name</div>
+                <div class="user-role">Engineer</div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
 
+    <!-- Debug notification -->
+    <div id="debugNotification" style="display: none; position: fixed; top: 60px; right: 20px; background: #ff6b6b; color: white; padding: 15px; border-radius: 5px; z-index: 9999; max-width: 400px; word-break: break-all; font-size: 12px;"></div>
+       
     <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Dashboard Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboard</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="engineer-dashboard.html" class="nav-link">
+                            <span>📊</span> Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Operations Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="projects.html" class="nav-link">
+                            <span>📍</span> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="workers.html" class="nav-link">
+                            <span>👷</span> Workers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="resources.html" class="nav-link">
+                            <span>📦</span> Resources
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Management Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="costs.html" class="nav-link">
+                            <span>💰</span> Costs & Budget
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="schedules.html" class="nav-link">
+                            <span>📅</span> Schedules
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Monitoring Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Monitoring</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="alerts.html" class="nav-link active">
+                            <span>🔔</span> Alerts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="safety.html" class="nav-link">
+                            <span>⚠️</span> Safety
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span>📊</span> Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main>
         <!-- SECTION A: PAGE HEADER -->
         <header class="page-header">
             <div class="header-content">
                 <h1>Alerts</h1>
                 <p class="subtitle">System Alerts & Risk Management</p>
             </div>
-            <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
         </header>
 
         <!-- Loading Spinner -->
@@ -65,6 +153,14 @@
                     </select>
                 </div>
 
+                <div class="filter-group">
+                    <label for="filterAlertType">Alert Type:</label>
+                    <select id="filterAlertType" class="filter-select">
+                        <option value="">All Types</option>
+                        <!-- Additional options will be populated by JavaScript -->
+                    </select>
+                </div>
+
                 <div class="filter-actions">
                     <button id="clearFiltersBtn" class="btn btn-secondary">Clear Filters</button>
                 </div>
@@ -95,10 +191,7 @@
         <section class="section alerts-section">
             <div class="section-header">
                 <h2>System Alerts</h2>
-                <p class="section-description">
-                    These alerts are automatically generated by database triggers when risk conditions are detected.
-                    The frontend consumes these alerts from the Alert table for monitoring and display.
-                </p>
+
             </div>
 
             <div class="table-wrapper">
@@ -126,49 +219,11 @@
             </div>
         </section>
 
-        <!-- Information Section -->
-        <section class="section info-section">
-            <div class="section-header">
-                <h2>How Alerts Work</h2>
-            </div>
-
-            <div class="info-content">
-                <div class="info-card">
-                    <h3>Database Triggers Generate Alerts</h3>
-                    <p>
-                        Alerts are not created by the frontend. Instead, database triggers automatically 
-                        detect risk conditions (e.g., material stock below threshold, task delays, cost overruns) 
-                        and insert records into the Alert table. This ensures alerts are data-driven and reliable.
-                    </p>
-                </div>
-
-                <div class="info-card">
-                    <h3>Alert Types</h3>
-                    <ul>
-                        <li><strong>material_low:</strong> Material inventory falls below safety threshold</li>
-                        <li><strong>cost_overrun:</strong> Project cost exceeds allocated budget</li>
-                        <li><strong>task_delay:</strong> Task completion date is overdue</li>
-                        <li><strong>schedule_conflict:</strong> Resource allocation conflict detected</li>
-                    </ul>
-                </div>
-
-                <div class="info-card">
-                    <h3>Frontend Responsibilities</h3>
-                    <p>
-                        The frontend fetches alerts from the Alert table via REST API, displays them to engineers, 
-                        and allows resolution status updates. The frontend does NOT generate alerts—it only consumes 
-                        and displays them.
-                    </p>
-                </div>
-            </div>
-        </section>
+        </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2026 SmartSite. Construction Area Management System.</p>
-    </footer>
 
-    <script src="js/alerts.js"></script>
+    <script src="js/common.js?v=2"></script>
+    <script src="js/alerts.js?v=2"></script>
 </body>
 </html>

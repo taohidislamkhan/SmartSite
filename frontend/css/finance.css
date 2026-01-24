@@ -44,70 +44,13 @@ body {
    NAVBAR STYLES
    ===================================================== */
 
-.navbar {
-    background-color: var(--primary-color);
-    color: var(--white);
-    padding: 1rem 0;
-    box-shadow: var(--shadow);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.navbar-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.navbar-brand {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--white);
-}
-
-.navbar-menu {
-    display: flex;
-    gap: 2rem;
-    align-items: center;
-}
-
-.nav-link {
-    color: var(--white);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-    color: var(--secondary-color);
-}
-
-.nav-link.active {
-    color: var(--secondary-color);
-    border-bottom: 2px solid var(--secondary-color);
-    padding-bottom: 0.25rem;
-}
-
-.user-info {
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-}
+/* Navigation styling moved to dashboard.css */
 
 /* =====================================================
-   CONTAINER & LAYOUT
+   CONTAINER & LAYOUT - Now handled by dashboard.css
    ===================================================== */
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    min-height: calc(100vh - 200px);
-}
+/* Container layout (with sidebar) now managed by dashboard.css */
 
 /* =====================================================
    PAGE HEADER
@@ -448,7 +391,7 @@ body {
 }
 
 .stat-card {
-    background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+    background: linear-gradient(135deg, #2c3e50, #34495e);
     color: var(--white);
     padding: 2rem;
     border-radius: 6px;

@@ -1,0 +1,554 @@
+/**
+ * Schedules Page Stylesheet
+ * 
+ * PURPOSE:
+ * Professional styling for the schedule monitoring and management page.
+ * Enables engineers to visualize task timelines and identify delays.
+ * 
+ * DESIGN PRINCIPLES:
+ * - Match dashboard.css layout and typography
+ * - Color-code schedule status (green/yellow/red)
+ * - Make delayed tasks visually prominent
+ * - Responsive and screenshot-friendly
+ */
+
+/* ============================================================================
+   ROOT VARIABLES
+   ============================================================================ */
+
+:root {
+    /* Status Colors */
+    --status-on-time: #27ae60;      /* Green - On schedule */
+    --status-at-risk: #f39c12;      /* Orange - Approaching deadline */
+    --status-delayed: #e74c3c;      /* Red - Overdue/Delayed */
+    
+    /* Text Colors */
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --text-light: #ecf0f1;
+    
+    /* Background Colors */
+    --bg-white: #ffffff;
+    --bg-light: #f5f7fa;
+    --bg-hover: #ecf0f1;
+    
+    /* Border and Shadow */
+    --border-color: #bdc3c7;
+    --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   PAGE HEADER
+   ============================================================================ */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.btn-back {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.btn-back:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #1e5f8f 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* ============================================================================
+   KPI CARDS SECTION
+   ============================================================================ */
+
+.kpi-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-white);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-light);
+    border-left: 4px solid #3498db;
+    transition: all 0.3s ease;
+}
+
+.kpi-card:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.kpi-card-alert {
+    border-left-color: var(--status-delayed);
+    background: rgba(231, 76, 60, 0.05);
+}
+
+.kpi-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.kpi-content {
+    flex: 1;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.kpi-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================================================
+   FILTERS SECTION
+   ============================================================================ */
+
+.filters-section {
+    background: var(--bg-white);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-light);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.filter-select,
+.filter-input {
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background-color: var(--bg-white);
+    transition: border-color 0.3s ease;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.filter-group-toggle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 1.25rem;
+}
+
+.filter-group-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.filter-checkbox {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+    transform: translateY(-2px);
+}
+
+/* ============================================================================
+   SCHEDULE TABLE SECTION
+   ============================================================================ */
+
+.schedule-table-container {
+    background: var(--bg-white);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.loading-spinner,
+.empty-state {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.loading-spinner p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.empty-state {
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.schedule-table thead {
+    background-color: #34495e;
+    color: white;
+}
+
+.schedule-table th {
+    padding: 1rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.schedule-table td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.schedule-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.schedule-table tbody tr:hover {
+    background-color: var(--bg-light);
+}
+
+/* Row color coding for delay status */
+.schedule-table tbody tr.row-on-time {
+    border-left: 3px solid var(--status-on-time);
+}
+
+.schedule-table tbody tr.row-at-risk {
+    border-left: 3px solid var(--status-at-risk);
+}
+
+.schedule-table tbody tr.row-delayed {
+    border-left: 3px solid var(--status-delayed);
+    background-color: rgba(231, 76, 60, 0.03);
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.planned {
+    background-color: #e8f4f8;
+    color: #2980b9;
+}
+
+.status-badge.in-progress {
+    background-color: #fef5e7;
+    color: #d68910;
+}
+
+.status-badge.completed {
+    background-color: #e8f8f5;
+    color: #16a085;
+}
+
+.status-badge.on-hold {
+    background-color: #fadbd8;
+    color: #c0392b;
+}
+
+/* Delay indicator */
+.delay-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.delay-indicator.on-time {
+    background-color: #d5f4e6;
+    color: var(--status-on-time);
+}
+
+.delay-indicator.at-risk {
+    background-color: #fef5e7;
+    color: var(--status-at-risk);
+}
+
+.delay-indicator.delayed {
+    background-color: #fadbd8;
+    color: var(--status-delayed);
+}
+
+.delay-indicator::before {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+/* Delay value styling */
+.delay-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.delay-value.delayed {
+    color: var(--status-delayed);
+}
+
+.delay-value.at-risk {
+    color: var(--status-at-risk);
+}
+
+/* Date styling */
+.date-cell {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+}
+
+.date-cell.missing {
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* Action buttons */
+.action-button {
+    padding: 0.375rem 0.75rem;
+    margin: 0 0.25rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.btn-edit {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+/* ============================================================================
+   ALERTS SECTION
+   ============================================================================ */
+
+.alerts-section {
+    background: var(--bg-white);
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-light);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.alert-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-left: 4px solid;
+    border-radius: 0.375rem;
+    background-color: #f9f9f9;
+}
+
+.alert-item.info {
+    border-left-color: #3498db;
+    background-color: #ebf5fb;
+}
+
+.alert-item.warning {
+    border-left-color: #f39c12;
+    background-color: #fef5e7;
+}
+
+.alert-item.error {
+    border-left-color: #e74c3c;
+    background-color: #fadbd8;
+}
+
+.alert-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.alert-message {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.empty-alerts {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+    .schedule-table {
+        font-size: 0.8rem;
+    }
+    
+    .schedule-table th,
+    .schedule-table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .filters-section {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .kpi-cards-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .filters-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .schedule-table {
+        font-size: 0.75rem;
+        overflow-x: auto;
+    }
+    
+    .schedule-table th,
+    .schedule-table td {
+        padding: 0.5rem;
+    }
+}

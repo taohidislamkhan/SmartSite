@@ -519,49 +519,37 @@
 
         /**
          * Load worker-specific dashboard data
-         * Only fetches: assigned area + tasks for that area
+         * Fetches: assigned area + all tasks assigned to the worker
          */
         async function loadWorkerDashboardData() {
             try {
-                // Get current user info
-                const userResponse = await fetch(`${API_BASE}/auth/me`, {
+                // Get current worker's assigned tasks
+                const tasksResponse = await fetch(`${API_BASE}/workers/current/assigned-tasks`, {
                     credentials: 'include'
                 });
 
-                if (!userResponse.ok) {
-                    window.location.href = '/login.html';
+                if (!tasksResponse.ok) {
+                    console.error('Failed to load tasks');
+                    displayTasksError('Failed to load your assigned tasks');
                     return;
                 }
 
-                const user = await userResponse.json();
-                const areaId = user.area_id;
-
-                // Load area details
-                const areaResponse = await fetch(`${API_BASE}/areas/${areaId}/`, {
-                    credentials: 'include'
-                });
-
-                if (areaResponse.ok) {
-                    const area = await areaResponse.json();
-                    displayAreaInfo(area);
+                const data = await tasksResponse.json();
+                console.log('Loaded worker data:', data);
+                
+                // Display area information
+                if (data.area) {
+                    displayAreaInfo(data.area);
+                } else {
+                    console.warn('No area assigned to worker');
                 }
-
-                // Load only THIS WORKER'S tasks (not all tasks)
-                const tasksResponse = await fetch(`${API_BASE}/tasks/`, {
-                    credentials: 'include'
-                });
-
-                if (tasksResponse.ok) {
-                    const allTasks = await tasksResponse.json();
-                    // Filter: only tasks assigned to this worker in their area
-                    const myTasks = allTasks.filter(task => 
-                        task.area_id === areaId && 
-                        task.assigned_worker_id === user.user_id
-                    );
-                    displayMyTasks(myTasks);
-                }
+                
+                // Display tasks
+                displayTasks(data.tasks);
+                
             } catch (err) {
-                console.error('Error loading worker data:', err);
+                console.error('Error loading dashboard data:', err);
+                displayTasksError('Error loading your assigned tasks');
             }
         }
 
@@ -577,9 +565,26 @@
         }
 
         /**
+         * Display error message for tasks
+         */
+        function displayTasksError(message) {
+            const container = document.getElementById('tasks-container');
+            const countEl = document.getElementById('tasks-count');
+            
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">⚠️</div>
+                    <div class="empty-state-title">Error Loading Tasks</div>
+                    <p>${escapeHtml(message)}</p>
+                </div>
+            `;
+            countEl.textContent = 'Error loading tasks';
+        }
+
+        /**
          * Display worker's assigned tasks
          */
-        function displayMyTasks(tasks) {
+        function displayTasks(tasks) {
             const container = document.getElementById('tasks-container');
             const countEl = document.getElementById('tasks-count');
 

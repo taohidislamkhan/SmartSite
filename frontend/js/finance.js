@@ -43,9 +43,9 @@ let filteredCosts = [];
 // PAGE INITIALIZATION
 // ============================================
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     console.log('Finance page loaded');
-    loadUserInfo();
+    await initializePageHeader(); // From common.js
     loadFinancialData();
     setupEventListeners();
 });
@@ -82,9 +82,9 @@ async function loadFinancialData() {
     try {
         // Fetch all required data in parallel
         const [costsRes, budgetsRes, areasRes] = await Promise.all([
-            fetch('/api/costs', { credentials: 'include' }),
-            fetch('/api/budgets', { credentials: 'include' }),
-            fetch('/api/areas', { credentials: 'include' })
+            fetch('/api/costs/', { credentials: 'include' }),
+            fetch('/api/budgets/', { credentials: 'include' }),
+            fetch('/api/areas/', { credentials: 'include' })
         ]);
         
         // Check for errors
@@ -159,20 +159,21 @@ function populateCostEntries() {
         
         // Get area name from areas array
         const area = allAreas.find(a => a.area_id === cost.area_id);
-        const areaName = area ? area.area_name : 'Unknown';
+        const areaName = area ? area.name : 'Unknown';
         
         // Format currency
-        const amount = formatCurrency(cost.cost_amount);
+        const amount = formatCurrency(cost.amount);
         
         // Format date
-        const incurredDate = formatDate(cost.cost_date);
+        const incurredDate = formatDate(cost.incurred_date);
         
-        // Get cost type badge class
-        const costTypeClass = `cost-type-${cost.cost_type.toLowerCase()}`;
+        // Get cost type badge class - add null check
+        const costType = cost.type || 'other';
+        const costTypeClass = `cost-type-${costType.toLowerCase()}`;
         
         row.innerHTML = `
             <td><strong>${areaName}</strong></td>
-            <td><span class="cost-type-badge ${costTypeClass}">${cost.cost_type}</span></td>
+            <td><span class="cost-type-badge ${costTypeClass}">${costType}</span></td>
             <td class="text-right">${amount}</td>
             <td>${incurredDate}</td>
             <td>${cost.description || '-'}</td>
@@ -202,7 +203,7 @@ function populateBudgetSummary() {
         if (!budgetByAreaId[budget.area_id]) {
             budgetByAreaId[budget.area_id] = 0;
         }
-        budgetByAreaId[budget.area_id] += budget.budget_amount;
+        budgetByAreaId[budget.area_id] += parseFloat(budget.estimated_budget) || 0;
     });
     
     // Group costs by area
@@ -211,7 +212,7 @@ function populateBudgetSummary() {
         if (!costByAreaId[cost.area_id]) {
             costByAreaId[cost.area_id] = 0;
         }
-        costByAreaId[cost.area_id] += cost.cost_amount;
+        costByAreaId[cost.area_id] += parseFloat(cost.amount) || 0;
     });
     
     // Create summary card for each area
@@ -234,7 +235,7 @@ function populateBudgetSummary() {
         const card = document.createElement('div');
         card.className = 'summary-card';
         card.innerHTML = `
-            <div class="card-title">${area.area_name}</div>
+            <div class="card-title">${area.name}</div>
             
             <div class="card-values">
                 <div class="value-item">
@@ -299,14 +300,14 @@ function populateOverBudgetSection() {
         if (!budgetByAreaId[budget.area_id]) {
             budgetByAreaId[budget.area_id] = 0;
         }
-        budgetByAreaId[budget.area_id] += budget.budget_amount;
+        budgetByAreaId[budget.area_id] += parseFloat(budget.estimated_budget) || 0;
     });
     
     allCosts.forEach(cost => {
         if (!costByAreaId[cost.area_id]) {
             costByAreaId[cost.area_id] = 0;
         }
-        costByAreaId[cost.area_id] += cost.cost_amount;
+        costByAreaId[cost.area_id] += parseFloat(cost.amount) || 0;
     });
     
     // Find areas over budget
@@ -335,7 +336,7 @@ function populateOverBudgetSection() {
         
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td><strong>${area.area_name}</strong></td>
+            <td><strong>${area.name}</strong></td>
             <td>${formatCurrency(budget)}</td>
             <td class="text-danger"><strong>${formatCurrency(cost)}</strong></td>
             <td>${formatCurrency(overrun)} <span class="text-danger">(+${percentage}%)</span></td>
@@ -352,8 +353,8 @@ function populateOverBudgetSection() {
  */
 function populateFinancialSummary() {
     // Calculate totals
-    const totalBudget = allBudgets.reduce((sum, b) => sum + b.budget_amount, 0);
-    const totalCost = allCosts.reduce((sum, c) => sum + c.cost_amount, 0);
+    const totalBudget = allBudgets.reduce((sum, b) => sum + (parseFloat(b.estimated_budget) || 0), 0);
+    const totalCost = allCosts.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
     const remainingBudget = totalBudget - totalCost;
     const budgetUtilization = totalBudget > 0 ? Math.round((totalCost / totalBudget) * 100) : 0;
     
@@ -378,7 +379,7 @@ function populateFilterOptions() {
         if (area) {
             const option = document.createElement('option');
             option.value = areaId;
-            option.textContent = area.area_name;
+            option.textContent = area.name;
             projectSelect.appendChild(option);
         }
     });
@@ -393,7 +394,8 @@ function applyFilters() {
     
     filteredCosts = allCosts.filter(cost => {
         const projectMatch = projectId === '' || cost.area_id == projectId;
-        const typeMatch = costType === '' || cost.cost_type.toLowerCase() === costType.toLowerCase();
+        const costTypeValue = cost.type || 'other';
+        const typeMatch = costType === '' || costTypeValue.toLowerCase() === costType.toLowerCase();
         return projectMatch && typeMatch;
     });
     

@@ -23,6 +23,29 @@ def get_db():
         db.close()
 
 
+@router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
+def create_task(task_data: TaskCreate, db: Session = Depends(get_db)):
+    """
+    POST /tasks
+    Create a new task
+    Required: area_id, title
+    Foreign keys: area_id (required), assigned_worker_id (optional)
+    Returns: Created TaskResponse object
+    """
+    try:
+        new_task = Task(**task_data.dict())
+        db.add(new_task)
+        db.commit()
+        db.refresh(new_task)
+        return new_task
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid task data or invalid area/worker ID"
+        )
+
+
 @router.get("/", response_model=list[TaskResponse])
 def get_tasks(
     area_id: int = None,
@@ -59,29 +82,6 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
             detail=f"Task with ID {task_id} not found"
         )
     return task
-
-
-@router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
-def create_task(task_data: TaskCreate, db: Session = Depends(get_db)):
-    """
-    POST /tasks
-    Create a new task
-    Required: area_id, title
-    Foreign keys: area_id (required), assigned_worker_id (optional)
-    Returns: Created TaskResponse object
-    """
-    try:
-        new_task = Task(**task_data.dict())
-        db.add(new_task)
-        db.commit()
-        db.refresh(new_task)
-        return new_task
-    except IntegrityError as e:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid task data or invalid area/worker ID"
-        )
 
 
 @router.put("/{task_id}", response_model=TaskResponse)

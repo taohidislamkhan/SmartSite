@@ -29,3 +29,13 @@ class WorkerResponse(WorkerBase):
 
     class Config:
         from_attributes = True
+
+
+class WorkerTaskAssignment(BaseModel):
+    """Schema for assigning a task to a worker"""
+    task_id: Optional[int] = None
+
+
+class WorkerAreaAssignment(BaseModel):
+    """Schema for assigning an area to a worker"""
+    area_id: Optional[int] = None

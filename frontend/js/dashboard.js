@@ -9,87 +9,64 @@
  * - Handle navigation to project details
  */
 
-const API_BASE = '/api';
-let currentUser = null;
+// API_BASE is already defined in common.js
 let allProjects = [];
 
 /**
  * Initialize dashboard on page load
  * - Verify user is authenticated
- * - Load user info
  * - Load projects
  * - Update KPI cards
  */
 async function initializeDashboard() {
     try {
-        // Step 1: Get current user
-        await loadCurrentUser();
+        console.log('=== initializeDashboard START ===');
+        
+        // Use currentUser from common.js which has already authenticated
+        console.log('currentUser:', currentUser);
         
         if (!currentUser) {
             // Not authenticated, redirect to login
+            console.log('NOT AUTHENTICATED - Redirecting to login');
             window.location.href = '/login.html';
             return;
         }
 
+        console.log('User is authenticated as:', currentUser.email);
+
         // Verify engineer role
+        console.log('Checking role. Current role:', currentUser.role);
+        
         if (currentUser.role !== 'engineer') {
+            console.error('Access denied. User role is not engineer');
             alert('Access denied. Engineer role required.');
             window.location.href = '/login.html';
             return;
         }
 
-        // Step 2: Update header with engineer name
-        updateHeader();
+        console.log('Engineer role verified');
 
-        // Step 3: Load projects
+        // Load projects
+        console.log('Loading projects...');
         await loadProjects();
+        console.log('Projects loaded. Total projects:', allProjects.length);
 
-        // Step 4: Update KPI cards
+        // Update KPI cards
+        console.log('Updating KPI cards...');
         updateKPICards();
 
-        // Step 5: Render project cards
+        // Render project cards
+        console.log('Rendering project cards...');
         renderProjectCards();
 
+        console.log('=== initializeDashboard COMPLETE ===');
+
     } catch (error) {
-        console.error('Dashboard initialization error:', error);
+        console.error('=== Dashboard initialization ERROR ===');
+        console.error('Error:', error);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
         alert('Error loading dashboard. Please refresh the page.');
-    }
-}
-
-/**
- * Load current user information from /api/auth/me
- */
-async function loadCurrentUser() {
-    try {
-        const response = await fetch(`${API_BASE}/auth/me`, {
-            method: 'GET',
-            credentials: 'include'
-        });
-
-        if (!response.ok) {
-            console.log('User not authenticated');
-            return null;
-        }
-
-        currentUser = await response.json();
-        return currentUser;
-    } catch (error) {
-        console.error('Error loading current user:', error);
-        return null;
-    }
-}
-
-/**
- * Update header with engineer name
- */
-function updateHeader() {
-    if (!currentUser) return;
-    
-    const nameElement = document.getElementById('engineerName');
-    if (nameElement) {
-        // Extract name from email (everything before @)
-        const name = currentUser.email.split('@')[0];
-        nameElement.textContent = name.charAt(0).toUpperCase() + name.slice(1);
     }
 }
 
@@ -290,28 +267,18 @@ function createProjectCard(project) {
 }
 
 /**
- * Navigate to projects list page
+ * Navigate to project details page
  */
 function viewProject(areaId) {
-    window.location.href = `/projects.html`;
-}
-
-/**
- * Handle logout
- */
-async function handleLogout() {
-    try {
-        const response = await fetch(`${API_BASE}/auth/logout`, {
-            method: 'POST',
-            credentials: 'include'
-        });
-
-        // Redirect to login regardless of response
-        window.location.href = '/login.html';
-    } catch (error) {
-        console.error('Logout error:', error);
-        // Still redirect to login
-        window.location.href = '/login.html';
+    console.log('View Project clicked with area_id:', areaId);
+    
+    if (areaId) {
+        const url = `/project_details.html?area_id=${areaId}`;
+        console.log('Navigating to:', url);
+        window.location.href = url;
+    } else {
+        console.warn('No area_id provided');
+        window.location.href = '/projects.html';
     }
 }
 
@@ -327,13 +294,17 @@ function escapeHtml(text) {
 /**
  * Initialize on DOMContentLoaded
  */
-document.addEventListener('DOMContentLoaded', () => {
-    // Set up logout button
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', handleLogout);
-    }
-
-    // Initialize dashboard
-    initializeDashboard();
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('=== Dashboard Page DOMContentLoaded ===');
+    
+    // Initialize page header first (from common.js)
+    // MUST await this to ensure currentUser is set before initializeDashboard runs
+    console.log('Calling initializePageHeader()');
+    await initializePageHeader();
+    
+    // Then initialize dashboard
+    console.log('Calling initializeDashboard()');
+    await initializeDashboard();
+    
+    console.log('=== Dashboard Page Initialization Complete ===');
 });

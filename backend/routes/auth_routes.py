@@ -141,7 +141,11 @@ def signup_engineer(
         "email": "engineer@example.com",
         "password": "secure_password",
         "password_confirm": "secure_password",
-        "role": "engineer"
+        "role": "engineer",
+        "first_name": "John",
+        "last_name": "Doe",
+        "phone": "+1 (555) 123-4567",
+        "address": "123 Main Street"
     }
     
     Returns: New engineer user details
@@ -165,6 +169,19 @@ def signup_engineer(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Engineers are not assigned to areas during signup. Areas are managed separately."
         )
+    
+    # Create Engineer record first with full name
+    engineer_name = f"{user_data.first_name or ''} {user_data.last_name or ''}".strip()
+    
+    new_engineer = Engineer(
+        name=engineer_name,
+        email=user_data.email,
+        phone=user_data.phone,
+        expertise=None  # Can be updated later
+    )
+    
+    db.add(new_engineer)
+    db.flush()  # Flush to get the engineer_id
     
     # Create new engineer user
     new_user = User(
@@ -196,7 +213,12 @@ def signup_worker(
         "password": "secure_password",
         "password_confirm": "secure_password",
         "role": "worker",
-        "area_id": 1
+        "area_id": 1,
+        "first_name": "John",
+        "last_name": "Smith",
+        "contact": "+1 (555) 123-4567",
+        "address": "123 Worker St, City, State",
+        "skill": "Electrician"
     }
     
     Returns: New worker user details
@@ -230,7 +252,13 @@ def signup_worker(
             detail=f"Area with ID {user_data.area_id} not found"
         )
     
-    # Create new worker user
+    # Create worker full name from first and last name
+    worker_name = f"{user_data.first_name or ''} {user_data.last_name or ''}".strip()
+    if not worker_name:
+        # If no first/last name provided, use email prefix
+        worker_name = user_data.email.split('@')[0]
+    
+    # Create new worker user first
     new_user = User(
         email=user_data.email,
         password_hash=hash_password(user_data.password),
@@ -239,6 +267,22 @@ def signup_worker(
     )
     
     db.add(new_user)
+    db.flush()  # Get user_id without committing yet
+    
+    # Create new Worker record linked to the User
+    new_worker = Worker(
+        user_id=new_user.user_id,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        name=worker_name,
+        contact=user_data.contact,
+        address=user_data.address,
+        skill=user_data.skill,
+        cost_per_day=0.00,  # Default, can be updated by admin
+        current_area_id=user_data.area_id
+    )
+    
+    db.add(new_worker)
     db.commit()
     db.refresh(new_user)
     
@@ -314,12 +358,18 @@ def login(
         samesite="lax"
     )
     
-    # Find engineer_id if user is an engineer
+    # Find engineer_id and name if user is an engineer
     engineer_id = None
+    engineer_name = None
+    engineer_first_name = None
+    
     if user.role == 'engineer':
         engineer = db.query(Engineer).filter(Engineer.email == user.email).first()
         if engineer:
             engineer_id = engineer.engineer_id
+            engineer_name = engineer.name
+            # Extract first name from full name
+            engineer_first_name = engineer.name.split()[0] if engineer.name else None
     
     return LoginResponse(
         user_id=user.user_id,
@@ -327,6 +377,8 @@ def login(
         role=user.role,
         area_id=user.area_id,
         engineer_id=engineer_id,
+        engineer_name=engineer_name,
+        engineer_first_name=engineer_first_name,
         message="Login successful"
     )
 
@@ -362,24 +414,31 @@ def get_current_user_info(
     GET /auth/me
     Get current logged-in user information
     
-    For engineers: Also returns engineer_id from Engineer table (matched by email)
+    For engineers: Also returns engineer_id and engineer name from Engineer table (matched by email)
     
-    Returns: Current user details with engineer_id if engineer role
+    Returns: Current user details with engineer_id and engineer_name if engineer role
     """
-    # If engineer, find engineer_id by email
+    # If engineer, find engineer details by email
     engineer_id = None
+    engineer_name = None
+    engineer_first_name = None
+    
     if current_user.role == 'engineer':
         engineer = db.query(Engineer).filter(Engineer.email == current_user.email).first()
         if engineer:
             engineer_id = engineer.engineer_id
+            engineer_name = engineer.name
+            engineer_first_name = engineer.name.split()[0] if engineer.name else None
     
-    # Build response with engineer_id
+    # Build response with engineer details
     return UserResponse(
         user_id=current_user.user_id,
         email=current_user.email,
         role=current_user.role,
         area_id=current_user.area_id,
         engineer_id=engineer_id,
+        engineer_name=engineer_name,
+        engineer_first_name=engineer_first_name,
         created_at=current_user.created_at
     )
 

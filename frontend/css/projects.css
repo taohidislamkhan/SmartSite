@@ -85,78 +85,16 @@ body {
 }
 
 /* ============================================================================
-   NAVIGATION BAR
+   NAVIGATION BAR - Now handled by dashboard.css
    ============================================================================ */
 
-.navbar {
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    padding: var(--spacing-md) 0;
-    box-shadow: var(--shadow-md);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-md);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.nav-logo h1 {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
-    margin: 0;
-}
-
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-lg);
-}
-
-.user-info {
-    font-size: var(--font-size-sm);
-    color: var(--color-light);
-}
-
-.nav-link {
-    color: var(--color-light);
-    text-decoration: none;
-    font-size: var(--font-size-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
-}
-
-.nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--color-white);
-}
-
-.nav-link.logout {
-    background-color: var(--color-accent);
-    color: var(--color-white);
-}
-
-.nav-link.logout:hover {
-    background-color: #c0392b;
-}
+/* Navbar styling moved to dashboard.css to prevent conflicts with sidebar layout */
 
 /* ============================================================================
-   LAYOUT & CONTAINER
+   LAYOUT & CONTAINER - Now handled by dashboard.css
    ============================================================================ */
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--spacing-xl) var(--spacing-md);
-    min-height: calc(100vh - 200px);
-}
+/* Container layout (with sidebar) now managed by dashboard.css */
 
 /* ============================================================================
    PAGE HEADER
@@ -230,6 +168,7 @@ body {
    FILTER SECTION
    ============================================================================ */
 
+.filters-section,
 .filters {
     background-color: var(--color-white);
     padding: var(--spacing-lg);
@@ -240,6 +179,7 @@ body {
     gap: var(--spacing-lg);
     flex-wrap: wrap;
     align-items: flex-end;
+    width: 100%;
 }
 
 .filter-group {

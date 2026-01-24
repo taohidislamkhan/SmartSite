@@ -3,36 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects - Area Management System</title>
-    <link rel="stylesheet" href="/css/projects.css">
+    <title>Projects - SmartSite</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/projects.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-            </div>
-            <div class="nav-right">
-                <span id="userInfo" class="user-info"></span>
-                <a href="/engineer-dashboard.html" class="nav-link">Back to Dashboard</a>
-                <a href="/api/auth/logout" class="nav-link logout">Logout</a>
+    <!-- ====================================================================
+         HEADER
+         ==================================================================== -->
+    <header>
+        <div class="header-left">
+            <span class="logo">🏗️</span>
+            <div>
+                <div class="logo-text">SmartSite</div>
+                <div class="logo-subtitle">Construction Management System</div>
             </div>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="container">
-        <!-- Page Header -->
-        <section class="page-header">
-            <div>
-                <h2>Projects</h2>
-                <p class="subtitle">All assigned projects and areas</p>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="engineerName">Engineer Name</div>
+                <div class="user-role">Engineer</div>
             </div>
-            <a href="/create_project.html" class="btn btn-primary">+ Create New Project</a>
-        </section>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <!-- Debug notification -->
+    <div id="debugNotification" style="display: none; position: fixed; top: 60px; right: 20px; background: #ff6b6b; color: white; padding: 15px; border-radius: 5px; z-index: 9999; max-width: 400px; word-break: break-all; font-size: 12px;"></div>
+
+    <!-- ====================================================================
+         MAIN CONTAINER (Sidebar + Content)
+         ==================================================================== -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Dashboard Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboard</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="engineer-dashboard.html" class="nav-link">
+                            <span>📊</span> Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Operations Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="projects.html" class="nav-link active">
+                            <span>📍</span> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="workers.html" class="nav-link">
+                            <span>👷</span> Workers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="resources.html" class="nav-link">
+                            <span>📦</span> Resources
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Management Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="costs.html" class="nav-link">
+                            <span>💰</span> Costs & Budget
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="schedules.html" class="nav-link">
+                            <span>📅</span> Schedules
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Monitoring Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Monitoring</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="alerts.html" class="nav-link">
+                            <span>🔔</span> Alerts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="safety.html" class="nav-link">
+                            <span>⚠️</span> Safety
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span>📊</span> Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- Page Header -->
+            <div class="page-header page-header-with-action">
+                <div>
+                    <h1 class="page-title">Projects</h1>
+                    <p class="page-subtitle">All assigned projects and areas</p>
+                </div>
+                <a href="create_project.html" class="btn-create-project">+ Create New Project</a>
+            </div>
 
         <!-- Filter Section -->
-        <section class="filters">
+        <section class="filters-section">
             <div class="filter-group">
                 <label for="statusFilter">Status:</label>
                 <select id="statusFilter" class="filter-select">
@@ -65,7 +156,7 @@
 
             <div id="emptyState" class="empty-state" style="display: none;">
                 <p>No projects found. Create your first project to get started.</p>
-                <a href="/create_project.html" class="btn btn-primary">Create Project</a>
+                <a href="create_project.html" class="btn btn-primary">Create Project</a>
             </div>
 
             <table id="projectsTable" class="projects-table" style="display: none;">
@@ -85,13 +176,12 @@
                 </tbody>
             </table>
         </section>
-    </main>
+        </main>
+    </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2026 Area Management System. Academic DBMS Project.</p>
-    </footer>
 
-    <script src="/js/projects.js"></script>
+
+    <script src="js/common.js?v=2"></script>
+    <script src="js/projects.js?v=2"></script>
 </body>
 </html>

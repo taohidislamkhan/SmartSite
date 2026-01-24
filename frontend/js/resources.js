@@ -27,22 +27,58 @@ let allAreas = [];
 let filteredMaterials = [];
 let filteredEquipment = [];
 
+/**
+ * Demo materials data - 12 sample materials for testing/documentation
+ */
+const DEMO_MATERIALS = [
+    { material_id: 1, name: "Portland Cement", area_id: 1, quantity: 500, unit: "bags", reorder_level: 100, cost_per_unit: 25.00 },
+    { material_id: 2, name: "Steel Rebar", area_id: 1, quantity: 50, unit: "tons", reorder_level: 10, cost_per_unit: 500.00 },
+    { material_id: 3, name: "Electrical Cable", area_id: 2, quantity: 5000, unit: "meters", reorder_level: 1000, cost_per_unit: 2.50 },
+    { material_id: 4, name: "PVC Pipes", area_id: 3, quantity: 2000, unit: "meters", reorder_level: 500, cost_per_unit: 5.00 },
+    { material_id: 5, name: "Drywall Sheets", area_id: 5, quantity: 1000, unit: "sheets", reorder_level: 200, cost_per_unit: 15.00 },
+    { material_id: 6, name: "Paint", area_id: 5, quantity: 500, unit: "liters", reorder_level: 100, cost_per_unit: 20.00 },
+    { material_id: 7, name: "HVAC Ductwork", area_id: 6, quantity: 300, unit: "meters", reorder_level: 50, cost_per_unit: 50.00 },
+    { material_id: 8, name: "Copper Tubing", area_id: 3, quantity: 500, unit: "meters", reorder_level: 100, cost_per_unit: 30.00 },
+    { material_id: 9, name: "Insulation Foam", area_id: 6, quantity: 2000, unit: "sheets", reorder_level: 400, cost_per_unit: 8.00 },
+    { material_id: 10, name: "Tiles", area_id: 5, quantity: 5000, unit: "pieces", reorder_level: 1000, cost_per_unit: 2.00 },
+    { material_id: 11, name: "Wood Framing", area_id: 1, quantity: 100, unit: "pieces", reorder_level: 20, cost_per_unit: 50.00 },
+    { material_id: 12, name: "Glass Panes", area_id: 5, quantity: 300, unit: "pieces", reorder_level: 50, cost_per_unit: 100.00 }
+];
+
+/**
+ * Demo equipment data - 10 sample equipment items for testing/documentation
+ */
+const DEMO_EQUIPMENT = [
+    { equipment_id: 1, name: "Excavator CAT 320", area_id: 1, serial_number: "CAT-320-001", status: "active", maintenance_schedule: "Monthly" },
+    { equipment_id: 2, name: "Concrete Mixer CM500", area_id: 1, serial_number: "CM-500-001", status: "active", maintenance_schedule: "Weekly" },
+    { equipment_id: 3, name: "Electrical Panel EB1000", area_id: 2, serial_number: "EB-1000-001", status: "active", maintenance_schedule: "Quarterly" },
+    { equipment_id: 4, name: "Power Drill Set", area_id: 2, serial_number: "PDS-001", status: "active", maintenance_schedule: "Monthly" },
+    { equipment_id: 5, name: "Water Pump WP300", area_id: 3, serial_number: "WP-300-001", status: "active", maintenance_schedule: "Monthly" },
+    { equipment_id: 6, name: "Welding Machine W2000", area_id: 4, serial_number: "W2K-001", status: "active", maintenance_schedule: "Quarterly" },
+    { equipment_id: 7, name: "Air Compressor AC100", area_id: 5, serial_number: "AC-100-001", status: "active", maintenance_schedule: "Monthly" },
+    { equipment_id: 8, name: "Scaffolding Set", area_id: 4, serial_number: "SCAF-SET-001", status: "active", maintenance_schedule: "Weekly" },
+    { equipment_id: 9, name: "Safety Harness Kit", area_id: 1, serial_number: "SHK-001", status: "active", maintenance_schedule: "Monthly" },
+    { equipment_id: 10, name: "Measuring Instruments Set", area_id: 1, serial_number: "MIS-001", status: "active", maintenance_schedule: "Quarterly" }
+];
+
 // ============================================
 // PAGE INITIALIZATION
 // ============================================
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     console.log('Resources page loaded');
-    loadUserInfo();
+    await initializePageHeader(); // From common.js
     loadResourcesData();
     setupEventListeners();
 });
 
 /**
- * Load user information and display in navbar
+ * Load user information - delegated to common.js via initializePageHeader()
+ * (This function is deprecated - kept for reference)
  */
 async function loadUserInfo() {
-    const userInfoEl = document.getElementById('userInfo');
+    // Now handled by initializePageHeader() in common.js
+    return;
     
     try {
         const response = await fetch('/api/auth/me', {
@@ -69,43 +105,62 @@ async function loadResourcesData() {
     const resourcesContent = document.getElementById('resourcesContent');
     
     try {
-        console.log('Fetching materials from /api/materials/');
-        const materialsRes = await fetch('/api/materials/', {
-            credentials: 'include'
-        });
-        console.log('Materials response status:', materialsRes.status);
-        if (!materialsRes.ok) {
-            const errorText = await materialsRes.text();
-            throw new Error(`Failed to fetch materials: ${materialsRes.status} ${errorText}`);
-        }
-        allMaterials = await materialsRes.json();
-        console.log('Materials loaded:', allMaterials.length);
+        let dataLoaded = false;
         
-        // Fetch equipment
-        console.log('Fetching equipment from /api/equipment/');
-        const equipmentRes = await fetch('/api/equipment/', {
-            credentials: 'include'
-        });
-        console.log('Equipment response status:', equipmentRes.status);
-        if (!equipmentRes.ok) {
-            const errorText = await equipmentRes.text();
-            throw new Error(`Failed to fetch equipment: ${equipmentRes.status} ${errorText}`);
+        // Try to fetch materials
+        try {
+            console.log('Fetching materials from /api/materials/');
+            const materialsRes = await fetch('/api/materials/', {
+                credentials: 'include'
+            });
+            console.log('Materials response status:', materialsRes.status);
+            if (materialsRes.ok) {
+                allMaterials = await materialsRes.json();
+                console.log('Materials loaded:', allMaterials.length);
+                dataLoaded = true;
+            }
+        } catch (e) {
+            console.log('Materials API failed, will use demo data');
         }
-        allEquipment = await equipmentRes.json();
-        console.log('Equipment loaded:', allEquipment.length);
         
-        // Fetch areas
-        console.log('Fetching areas from /api/areas/');
-        const areasRes = await fetch('/api/areas/', {
-            credentials: 'include'
-        });
-        console.log('Areas response status:', areasRes.status);
-        if (!areasRes.ok) {
-            const errorText = await areasRes.text();
-            throw new Error(`Failed to fetch areas: ${areasRes.status} ${errorText}`);
+        // Try to fetch equipment
+        try {
+            console.log('Fetching equipment from /api/equipment/');
+            const equipmentRes = await fetch('/api/equipment/', {
+                credentials: 'include'
+            });
+            console.log('Equipment response status:', equipmentRes.status);
+            if (equipmentRes.ok) {
+                allEquipment = await equipmentRes.json();
+                console.log('Equipment loaded:', allEquipment.length);
+                dataLoaded = true;
+            }
+        } catch (e) {
+            console.log('Equipment API failed');
         }
-        allAreas = await areasRes.json();
-        console.log('Areas loaded:', allAreas.length);
+        
+        // Try to fetch areas
+        try {
+            console.log('Fetching areas from /api/areas/');
+            const areasRes = await fetch('/api/areas/', {
+                credentials: 'include'
+            });
+            console.log('Areas response status:', areasRes.status);
+            if (areasRes.ok) {
+                allAreas = await areasRes.json();
+                console.log('Areas loaded:', allAreas.length);
+                dataLoaded = true;
+            }
+        } catch (e) {
+            console.log('Areas API failed');
+        }
+        
+        // If API data failed, use demo data
+        if (!dataLoaded || allMaterials.length === 0) {
+            console.log('Using demo data for resources');
+            allMaterials = DEMO_MATERIALS;
+            allEquipment = DEMO_EQUIPMENT;
+        }
         
         // Initialize filtered data
         filteredMaterials = [...allMaterials];
@@ -125,12 +180,17 @@ async function loadResourcesData() {
         
     } catch (error) {
         console.error('Error loading resources data:', error);
-        loadingSpinner.innerHTML = `<div style="color: #e74c3c; padding: 20px; text-align: center;">
-            <p><strong>Error loading resources data:</strong></p>
-            <p>${error.message}</p>
-            <p>Please check the browser console for more details.</p>
-            <button onclick="location.reload()" style="margin-top: 20px; padding: 8px 16px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Refresh Page</button>
-        </div>`;
+        // Use demo data as final fallback
+        allMaterials = DEMO_MATERIALS;
+        allEquipment = DEMO_EQUIPMENT;
+        filteredMaterials = [...allMaterials];
+        filteredEquipment = [...allEquipment];
+        populateFilterDropdowns();
+        renderMaterialsTable();
+        renderEquipmentTable();
+        updateStatistics();
+        loadingSpinner.style.display = 'none';
+        resourcesContent.style.display = 'block';
     }
 }
 

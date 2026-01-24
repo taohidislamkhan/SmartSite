@@ -4,30 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cost & Budget - SmartSite</title>
+    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/finance.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-brand">SmartSite</div>
-            <div class="navbar-menu">
-                <a href="dashboard.html" class="nav-link">Dashboard</a>
-                <a href="finance.html" class="nav-link active">Finance</a>
-                <a href="projects.html" class="nav-link">Projects</a>
-                <span id="userInfo" class="user-info">User</span>
+    <!-- ====================================================================
+         HEADER
+         ==================================================================== -->
+    <header>
+        <div class="header-left">
+            <span class="logo">🏗️</span>
+            <div>
+                <div class="logo-text">SmartSite</div>
+                <div class="logo-subtitle">Construction Management System</div>
             </div>
         </div>
-    </nav>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="engineerName">Engineer Name</div>
+                <div class="user-role">Engineer</div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
 
+    <!-- Debug notification -->
+    <div id="debugNotification" style="display: none; position: fixed; top: 60px; right: 20px; background: #ff6b6b; color: white; padding: 15px; border-radius: 5px; z-index: 9999; max-width: 400px; word-break: break-all; font-size: 12px;"></div>
+         MAIN CONTAINER (Sidebar + Content)
+         ==================================================================== -->
     <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Dashboard Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboard</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="engineer-dashboard.html" class="nav-link">
+                            <span>📊</span> Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Operations Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="projects.html" class="nav-link">
+                            <span>📍</span> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="workers.html" class="nav-link">
+                            <span>👷</span> Workers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="resources.html" class="nav-link">
+                            <span>📦</span> Resources
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Management Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="costs.html" class="nav-link active">
+                            <span>💰</span> Costs & Budget
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="schedules.html" class="nav-link">
+                            <span>📅</span> Schedules
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Monitoring Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Monitoring</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="alerts.html" class="nav-link">
+                            <span>🔔</span> Alerts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="safety.html" class="nav-link">
+                            <span>⚠️</span> Safety
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span>📊</span> Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main>
         <!-- SECTION A: PAGE HEADER -->
         <header class="page-header">
             <div class="header-content">
                 <h1>Cost & Budget</h1>
                 <p class="subtitle">Financial Control & Monitoring</p>
             </div>
-            <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+            <a href="engineer-dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
         </header>
 
         <!-- Loading Spinner -->
@@ -154,11 +244,15 @@
         </section>
     </div>
 
+        </main>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2026 SmartSite. Construction Area Management System.</p>
     </footer>
 
-    <script src="js/finance.js"></script>
+    <script src="js/common.js?v=2"></script>
+    <script src="js/finance.js?v=2"></script>
 </body>
 </html>

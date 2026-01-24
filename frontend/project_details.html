@@ -3,26 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Details - Area Management System</title>
-    <link rel="stylesheet" href="/css/project_details.css">
+    <title>Project Details - SmartSite</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/project_details.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-            </div>
-            <div class="nav-right">
-                <span id="userInfo" class="user-info"></span>
-                <a href="/projects.html" class="nav-link">Back to Projects</a>
-                <a href="/engineer-dashboard.html" class="nav-link">Back to Dashboard</a>
-                <a href="/api/auth/logout" class="nav-link logout">Logout</a>
+    <!-- ====================================================================
+         HEADER
+         ==================================================================== -->
+    <header>
+        <div class="header-left">
+            <span class="logo">🏗️</span>
+            <div>
+                <div class="logo-text">SmartSite</div>
+                <div class="logo-subtitle">Construction Management System</div>
             </div>
         </div>
-    </nav>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="engineerName">Engineer Name</div>
+                <div class="user-role">Engineer</div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
 
-    <!-- Main Content -->
-    <main class="container">
+    <!-- Debug notification -->
+    <div id="debugNotification" style="display: none; position: fixed; top: 60px; right: 20px; background: #ff6b6b; color: white; padding: 15px; border-radius: 5px; z-index: 9999; max-width: 400px; word-break: break-all; font-size: 12px;"></div>
+         
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Dashboard Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboard</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="engineer-dashboard.html" class="nav-link">
+                            <span>📊</span> Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Operations Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="projects.html" class="nav-link active">
+                            <span>📍</span> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="workers.html" class="nav-link">
+                            <span>👷</span> Workers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="resources.html" class="nav-link">
+                            <span>📦</span> Resources
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Management Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="costs.html" class="nav-link">
+                            <span>💰</span> Costs & Budget
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="schedules.html" class="nav-link">
+                            <span>📅</span> Schedules
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Monitoring Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Monitoring</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="alerts.html" class="nav-link">
+                            <span>🔔</span> Alerts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="safety.html" class="nav-link">
+                            <span>⚠️</span> Safety
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span>📊</span> Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main>
         <!-- Loading State -->
         <div id="loadingSpinner" class="loading-overlay">
             <div class="spinner"></div>
@@ -520,11 +607,193 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2026 Area Management System. Academic DBMS Project.</p>
-    </footer>
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Task</h3>
+                <button class="modal-close" onclick="closeModal('addTaskModal')">&times;</button>
+            </div>
+            <form id="addTaskForm" onsubmit="handleAddTask(event)">
+                <div class="form-group">
+                    <label for="addTaskTitleInput">Task Title *</label>
+                    <input type="text" id="addTaskTitleInput" required placeholder="Enter task title">
+                </div>
+                <div class="form-group">
+                    <label for="addTaskDescriptionInput">Description</label>
+                    <textarea id="addTaskDescriptionInput" rows="3" placeholder="Task details..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="addTaskStatusInput">Status *</label>
+                    <select id="addTaskStatusInput" required>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="blocked">Blocked</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addTaskDeadlineInput">Deadline *</label>
+                    <input type="date" id="addTaskDeadlineInput" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Task</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addTaskModal')">Cancel</button>
+                </div>
+                <div id="addTaskError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
 
-    <script src="/js/project_details.js"></script>
+    <!-- Assign Worker Modal -->
+    <div id="assignWorkerModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Assign Worker to Project</h3>
+                <button class="modal-close" onclick="closeModal('assignWorkerModal')">&times;</button>
+            </div>
+            <form id="assignWorkerForm" onsubmit="handleAssignWorker(event)">
+                <div class="form-group">
+                    <label for="assignWorkerNameInput">Worker Name *</label>
+                    <input type="text" id="assignWorkerNameInput" required placeholder="Enter worker name">
+                </div>
+                <div class="form-group">
+                    <label for="assignWorkerSkillInput">Skill/Role *</label>
+                    <input type="text" id="assignWorkerSkillInput" required placeholder="e.g., Mason, Carpenter">
+                </div>
+                <div class="form-group">
+                    <label for="assignWorkerCostInput">Cost Per Day *</label>
+                    <input type="number" id="assignWorkerCostInput" step="0.01" required min="0" placeholder="Daily rate">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Assign Worker</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('assignWorkerModal')">Cancel</button>
+                </div>
+                <div id="assignWorkerError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Material Modal -->
+    <div id="addMaterialModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Material</h3>
+                <button class="modal-close" onclick="closeModal('addMaterialModal')">&times;</button>
+            </div>
+            <form id="addMaterialForm" onsubmit="handleAddMaterial(event)">
+                <div class="form-group">
+                    <label for="addMaterialNameInput">Material Name *</label>
+                    <input type="text" id="addMaterialNameInput" required placeholder="e.g., Cement, Sand">
+                </div>
+                <div class="form-group">
+                    <label for="addMaterialQuantityInput">Quantity *</label>
+                    <input type="number" id="addMaterialQuantityInput" required min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                    <label for="addMaterialUnitInput">Unit *</label>
+                    <input type="text" id="addMaterialUnitInput" required placeholder="e.g., kg, tons, bags">
+                </div>
+                <div class="form-group">
+                    <label for="addMaterialThresholdInput">Reorder Threshold *</label>
+                    <input type="number" id="addMaterialThresholdInput" required min="0" placeholder="Minimum quantity to reorder">
+                </div>
+                <div class="form-group">
+                    <label for="addMaterialCostInput">Unit Cost</label>
+                    <input type="number" id="addMaterialCostInput" step="0.01" min="0" placeholder="Cost per unit">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Material</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addMaterialModal')">Cancel</button>
+                </div>
+                <div id="addMaterialError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Equipment Modal -->
+    <div id="addEquipmentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Equipment</h3>
+                <button class="modal-close" onclick="closeModal('addEquipmentModal')">&times;</button>
+            </div>
+            <form id="addEquipmentForm" onsubmit="handleAddEquipment(event)">
+                <div class="form-group">
+                    <label for="addEquipmentNameInput">Equipment Name *</label>
+                    <input type="text" id="addEquipmentNameInput" required placeholder="e.g., Excavator, Crane">
+                </div>
+                <div class="form-group">
+                    <label for="addEquipmentSerialInput">Serial Number</label>
+                    <input type="text" id="addEquipmentSerialInput" placeholder="Serial or identification number">
+                </div>
+                <div class="form-group">
+                    <label for="addEquipmentStatusInput">Status *</label>
+                    <select id="addEquipmentStatusInput" required>
+                        <option value="available">Available</option>
+                        <option value="in-use">In Use</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Equipment</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addEquipmentModal')">Cancel</button>
+                </div>
+                <div id="addEquipmentError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Incident Modal -->
+    <div id="reportIncidentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Report Safety Incident</h3>
+                <button class="modal-close" onclick="closeModal('reportIncidentModal')">&times;</button>
+            </div>
+            <form id="reportIncidentForm" onsubmit="handleReportIncident(event)">
+                <div class="form-group">
+                    <label for="incidentTypeInput">Incident Type *</label>
+                    <select id="incidentTypeInput" required>
+                        <option value="">-- Select Type --</option>
+                        <option value="minor-injury">Minor Injury</option>
+                        <option value="major-injury">Major Injury</option>
+                        <option value="near-miss">Near Miss</option>
+                        <option value="property-damage">Property Damage</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="incidentDescriptionInput">Description *</label>
+                    <textarea id="incidentDescriptionInput" rows="4" required placeholder="Detailed account of the incident..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="incidentSeverityInput">Severity Level *</label>
+                    <select id="incidentSeverityInput" required>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="incidentDateInput">Date of Incident *</label>
+                    <input type="date" id="incidentDateInput" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Report Incident</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('reportIncidentModal')">Cancel</button>
+                </div>
+                <div id="reportIncidentError" class="form-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+        </main>
+    </div>
+
+
+    <script src="js/common.js?v=2"></script>
+    <script src="js/project_details.js?v=2"></script>
 </body>
 </html>

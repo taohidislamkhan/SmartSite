@@ -3,7 +3,7 @@
  * Handles form validation, submission, and API integration
  */
 
-const API_BASE = '/api';
+// API_BASE is already defined in common.js
 
 // Form elements cache
 const form = document.getElementById('createProjectForm');
@@ -32,23 +32,67 @@ const errorElements = {
 /**
  * Initialize form on page load
  */
-document.addEventListener('DOMContentLoaded', () => {
-    // Verify user is authenticated
-    verifyAuthentication();
-    
-    // Attach form submit handler
-    form.addEventListener('submit', handleFormSubmit);
-    
-    // Attach input change handlers for real-time validation
-    projectNameInput.addEventListener('blur', () => validateField('name', projectNameInput.value));
-    locationInput.addEventListener('blur', () => validateField('location', locationInput.value));
-    areaTypeSelect.addEventListener('change', () => validateField('area_type', areaTypeSelect.value));
-    boundarySizeInput.addEventListener('blur', () => validateField('boundary_size', boundarySizeInput.value));
-    statusSelect.addEventListener('change', () => validateField('status', statusSelect.value));
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('=== Create Project page initialization started ===');
+    try {
+        // Step 0: Initialize page header (user info, logout button)
+        console.log('Step 0: Initializing page header...');
+        await initializePageHeader();
+        console.log('Step 0 Complete: Page header initialized');
+
+        // Step 1: Get current user info (needed for form submission)
+        console.log('Step 1: Loading current user...');
+        await loadCurrentUser();
+        
+        if (!currentUser) {
+            console.warn('No current user found');
+            showDebugNotification('Not logged in. Please log in to create a project.', 10000);
+            // Show a message instead of redirecting
+            const mainContent = document.querySelector('.form-main');
+            if (mainContent) {
+                mainContent.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; background: white; border-radius: 8px; margin: 2rem;">
+                        <h2 style="color: #d32f2f; margin-bottom: 1rem;">🔒 Not Logged In</h2>
+                        <p style="color: #666; margin-bottom: 2rem;">You must be logged in to create a project.</p>
+                        <a href="/login.html" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600;">Go to Login</a>
+                    </div>
+                `;
+            }
+            return;
+        }
+        console.log('Step 1 Complete: Current user loaded', currentUser);
+
+        // Step 2: Verify engineer role
+        console.log('Step 2: Verifying engineer role...');
+        if (currentUser.role !== 'engineer') {
+            alert('Access denied. Engineer role required.');
+            window.location.href = '/engineer-dashboard.html';
+            return;
+        }
+        console.log('Step 2 Complete: User is engineer');
+
+        // Step 3: Attach form handlers
+        console.log('Step 3: Attaching form handlers...');
+        form.addEventListener('submit', handleFormSubmit);
+        
+        // Attach input change handlers for real-time validation
+        projectNameInput.addEventListener('blur', () => validateField('name', projectNameInput.value));
+        locationInput.addEventListener('blur', () => validateField('location', locationInput.value));
+        areaTypeSelect.addEventListener('change', () => validateField('area_type', areaTypeSelect.value));
+        boundarySizeInput.addEventListener('blur', () => validateField('boundary_size', boundarySizeInput.value));
+        statusSelect.addEventListener('change', () => validateField('status', statusSelect.value));
+        console.log('Step 3 Complete: Form handlers attached');
+
+        console.log('=== Create Project page initialization complete ===');
+    } catch (error) {
+        console.error('=== Error initializing page ===', error);
+        showDebugNotification(`Initialization error: ${error.message}`);
+    }
 });
 
 /**
  * Verify user is authenticated and has engineer role
+ * (Deprecated - use initializePageHeader() and loadCurrentUser() instead)
  */
 async function verifyAuthentication() {
     try {

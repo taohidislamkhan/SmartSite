@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSite - Reports</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/reports.css">
+</head>
+<body>
+    <!-- ====================================================================
+         HEADER
+         ==================================================================== -->
+    <header>
+        <div class="header-left">
+            <span class="logo">🏗️</span>
+            <div>
+                <div class="logo-text">SmartSite</div>
+                <div class="logo-subtitle">Construction Management System</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="engineerName">Engineer Name</div>
+                <div class="user-role">Engineer</div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <!-- Debug notification -->
+    <div id="debugNotification" style="display: none; position: fixed; top: 60px; right: 20px; background: #ff6b6b; color: white; padding: 15px; border-radius: 5px; z-index: 9999; max-width: 400px; word-break: break-all; font-size: 12px;"></div>
+         
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Dashboard Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboard</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="engineer-dashboard.html" class="nav-link">
+                            <span>📊</span> Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Operations Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="projects.html" class="nav-link">
+                            <span>📍</span> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="workers.html" class="nav-link">
+                            <span>👷</span> Workers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="resources.html" class="nav-link">
+                            <span>📦</span> Resources
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Management Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="costs.html" class="nav-link">
+                            <span>💰</span> Costs & Budget
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="schedules.html" class="nav-link">
+                            <span>📅</span> Schedules
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Monitoring Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Monitoring</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="alerts.html" class="nav-link">
+                            <span>🔔</span> Alerts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="safety.html" class="nav-link">
+                            <span>⚠️</span> Safety
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reports.html" class="nav-link active">
+                            <span>📊</span> Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <!-- ================================================================
+                 SECTION A: PAGE HEADER
+                 ================================================================ -->
+            <div class="page-header">
+                <div class="header-top">
+                    <h1>Reports</h1>
+                    <p class="subtitle">Project Analytics & Management Reports</p>
+                </div>
+                <button class="btn-back" onclick="window.location.href='engineer-dashboard.html'">
+                    ← Back to Dashboard
+                </button>
+            </div>
+
+            <!-- ================================================================
+                 SECTION B: COST PER AREA REPORT
+                 ================================================================ -->
+            <section class="report-section">
+                <div class="section-header">
+                    <h2>📊 Cost per Area Report</h2>
+
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="report-table" id="costPerAreaTable">
+                        <thead>
+                            <tr>
+                                <th>Area Name</th>
+                                <th class="text-right">Material Cost</th>
+                                <th class="text-right">Labor Cost</th>
+                                <th class="text-right">Equipment Cost</th>
+                                <th class="text-right">Total Cost</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="costPerAreaBody">
+                            <tr class="loading-row">
+                                <td colspan="6">Loading report data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </section>
+
+            <!-- ================================================================
+                 SECTION C: DELAYED TASKS REPORT
+                 ================================================================ -->
+            <section class="report-section">
+                <div class="section-header">
+                    <h2>⏱️ Delayed Tasks Report</h2>
+
+                </div>
+
+                <div class="filter-group">
+                    <label for="severityFilter">Filter by Severity:</label>
+                    <select id="severityFilter" class="filter-select">
+                        <option value="">All Severities</option>
+                        <option value="Critical">Critical (>30 days)</option>
+                        <option value="High">High (>14 days)</option>
+                        <option value="Medium">Medium (>7 days)</option>
+                        <option value="Low">Low (≤7 days)</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="report-table" id="delayedTasksTable">
+                        <thead>
+                            <tr>
+                                <th>Project / Area</th>
+                                <th>Task Name</th>
+                                <th>Assigned Worker</th>
+                                <th>Planned End Date</th>
+                                <th class="text-right">Delay (Days)</th>
+                                <th class="text-center">Severity</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="delayedTasksBody">
+                            <tr class="loading-row">
+                                <td colspan="7">Loading report data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+            <!-- ================================================================
+                 SECTION D: WORKER ALLOCATION REPORT
+                 ================================================================ -->
+            <section class="report-section">
+                <div class="section-header">
+                    <h2>👷 Worker Allocation Report</h2>
+
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="report-table" id="workerAllocationTable">
+                        <thead>
+                            <tr>
+                                <th>Worker Name</th>
+                                <th>Skill</th>
+                                <th>Assigned Project</th>
+                                <th>Current Task</th>
+                                <th class="text-right">Cost per Day</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workerAllocationBody">
+                            <tr class="loading-row">
+                                <td colspan="6">Loading report data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+            <!-- ================================================================
+                 SECTION E: MATERIAL USAGE REPORT
+                 ================================================================ -->
+            <section class="report-section">
+                <div class="section-header">
+                    <h2>📦 Material Usage Report</h2>
+
+                </div>
+
+                <div class="filter-group">
+                    <label for="stockFilter">Filter by Status:</label>
+                    <select id="stockFilter" class="filter-select">
+                        <option value="">All Materials</option>
+                        <option value="low-stock">Low Stock Only</option>
+                        <option value="normal">Normal Stock</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="report-table" id="materialUsageTable">
+                        <thead>
+                            <tr>
+                                <th>Project / Area</th>
+                                <th>Material Name</th>
+                                <th class="text-right">Quantity Used</th>
+                                <th class="text-right">Quantity Remaining</th>
+                                <th class="text-right">Reorder Threshold</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materialUsageBody">
+                            <tr class="loading-row">
+                                <td colspan="6">Loading report data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+            <!-- ================================================================
+                 LEGEND AND NOTES
+                 ================================================================ -->
+            <section class="report-legend">
+                <h3>Report Legend</h3>
+                <div class="legend-grid">
+                    <div class="legend-item">
+                        <span class="badge status-critical">Critical</span>
+                        <span>Immediate action required</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="badge status-high">High</span>
+                        <span>Significant concern</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="badge status-medium">Medium</span>
+                        <span>Monitor closely</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="badge status-low">Low</span>
+                        <span>Minor issue</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="badge status-normal">Normal</span>
+                        <span>Within acceptable range</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="badge status-active">Active</span>
+                        <span>Currently in progress</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================================================================
+                 EXPORT SECTION
+                 ================================================================ -->
+            <section class="report-footer">
+                <button class="btn-primary" onclick="window.print()">
+                    🖨️ Print Report
+                </button>
+                <p class="footer-note">Reports are generated from live database queries using GROUP BY, JOINs, and aggregation functions</p>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/common.js?v=2"></script>
+    <script src="js/reports.js?v=2"></script>
+    <script>
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        });
+
+        // Set engineer name from localStorage
+        const engineerName = localStorage.getItem('engineerName') || 'Engineer';
+        document.getElementById('engineerName').textContent = engineerName;
+    </script>
+</body>
+</html>

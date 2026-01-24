@@ -4,17 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartSite - Create New Project</title>
+    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/create-project.css">
 </head>
 <body>
-    <div class="page-container">
-        <!-- Header -->
-        <header class="form-header">
-            <div class="header-content">
-                <h1>📋 Create New Project</h1>
-                <p class="header-subtitle">Add a new construction project to your portfolio</p>
+    <!-- ====================================================================
+         HEADER
+         ==================================================================== -->
+    <header>
+        <div class="header-left">
+            <span class="logo">🏗️</span>
+            <div>
+                <div class="logo-text">SmartSite</div>
+                <div class="logo-subtitle">Construction Management System</div>
             </div>
-        </header>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="engineerName">Engineer Name</div>
+                <div class="user-role">Engineer</div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <!-- Debug Notification -->
+    <div id="debugNotification" style="display: none; position: fixed; top: 60px; right: 20px; background: #ff6b6b; color: white; padding: 15px; border-radius: 5px; z-index: 9999; max-width: 400px; word-break: break-all; font-size: 12px;"></div>
+
+    <div class="page-container">
+        <!-- Form Header -->
+        <div style="background: white; padding: 2rem; border-bottom: 1px solid #e5e7eb;">
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">📋 Create New Project</h1>
+            <p style="color: #666; font-size: 0.95rem;">Add a new construction project to your portfolio</p>
+        </div>
 
         <!-- Main Content -->
         <main class="form-main">
@@ -169,6 +191,7 @@
         <p>Creating project...</p>
     </div>
 
-    <script src="js/create-project.js"></script>
+    <script src="js/common.js?v=3"></script>
+    <script src="js/create-project.js?v=3"></script>
 </body>
 </html>

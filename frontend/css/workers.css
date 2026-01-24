@@ -88,86 +88,16 @@ a:hover {
 }
 
 /* ============================================
-   NAVIGATION BAR
+   NAVIGATION BAR - Now handled by dashboard.css
    ============================================ */
 
-.navbar {
-    background-color: var(--primary-color);
-    color: white;
-    padding: var(--spacing-md) 0;
-    box-shadow: var(--shadow-md);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.nav-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-lg);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.nav-logo {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: var(--font-size-xl);
-    font-weight: bold;
-}
-
-.logo-icon {
-    font-size: 24px;
-}
-
-.logo-text {
-    color: white;
-}
-
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-lg);
-}
-
-.user-info {
-    font-size: var(--font-size-base);
-    color: #ecf0f1;
-}
-
-.nav-link {
-    color: white;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: 4px;
-    transition: var(--transition);
-}
-
-.nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.nav-link.logout {
-    background-color: var(--accent-color);
-    padding: var(--spacing-xs) var(--spacing-md);
-}
-
-.nav-link.logout:hover {
-    background-color: #c0392b;
-    color: white;
-}
+/* Navbar styling moved to dashboard.css to prevent conflicts with sidebar layout */
 
 /* ============================================
-   MAIN CONTAINER
+   MAIN CONTAINER - Now handled by dashboard.css
    ============================================ */
 
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: var(--spacing-lg);
-}
+/* Container layout (with sidebar) now managed by dashboard.css */
 
 /* ============================================
    PAGE HEADER

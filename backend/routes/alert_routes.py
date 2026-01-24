@@ -35,16 +35,18 @@ def get_db():
 
 @router.get("/", response_model=list[AlertResponse])
 def get_all_alerts(
-    resolved: bool = False,
+    resolved: bool = None,
     db: Session = Depends(get_db)
 ):
     """
     GET /alerts
-    Retrieve all alerts (active by default)
+    Retrieve all alerts
     
     Query params:
-      - resolved: if False (default), return unresolved alerts only
-                  if True, return resolved alerts
+      - resolved: filter by resolution status
+                  if None (default), return ALL alerts
+                  if False, return unresolved alerts only
+                  if True, return resolved alerts only
     
     Returns: List of AlertResponse objects
     
@@ -55,7 +57,8 @@ def get_all_alerts(
     - safety_incident: New SafetyIncident recorded
     """
     query = db.query(Alert)
-    query = query.filter(Alert.is_resolved == resolved)
+    if resolved is not None:
+        query = query.filter(Alert.is_resolved == resolved)
     return query.order_by(Alert.created_at.desc()).all()
 
 

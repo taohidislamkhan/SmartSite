@@ -1,14 +1,26 @@
-fastapi==0.128.0
-uvicorn==0.40.0
-sqlalchemy==2.0.45
-mysql-connector-python==8.0.33
-pydantic==2.12.5
-pydantic[email]==2.12.5
-passlib==1.7.4
-bcrypt==5.0.0
-python-multipart==0.0.21
-PyJWT==2.8.0
-python-dotenv==1.2.1
-cryptography==46.0.3
-argon2-cffi==25.1.0
-email-validator==2.3.0
+# SmartSite Construction Project Management System
+# Production Dependencies - Verified January 24, 2026
+
+# Web Framework & Server
+fastapi==0.128.0          # Modern async web framework
+uvicorn==0.40.0           # ASGI server for FastAPI
+
+# Database & ORM
+sqlalchemy==2.0.45        # SQL toolkit and ORM
+mysql-connector-python==8.0.33  # MySQL database connector
+
+# Data Validation
+pydantic==2.12.5          # Data validation using Python type annotations
+pydantic[email]==2.12.5   # Email validation support
+email-validator==2.3.0    # Enhanced email validation
+
+# Security & Authentication
+passlib==1.7.4            # Password hashing library
+bcrypt==5.0.0             # Bcrypt hashing (fallback)
+argon2-cffi==25.1.0       # Modern Argon2id password hashing (primary)
+PyJWT==2.8.0              # JWT token handling
+cryptography==46.0.3      # Cryptographic library
+
+# Utilities
+python-multipart==0.0.21  # File upload handling
+python-dotenv==1.2.1      # Environment variable management

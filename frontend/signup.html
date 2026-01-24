@@ -333,13 +333,55 @@
                 <div class="success-message" id="engineer-success"></div>
 
                 <div class="form-group">
+                    <label for="engineer-firstName">First Name</label>
+                    <input
+                        type="text"
+                        id="engineer-firstName"
+                        name="first_name"
+                        placeholder="John"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="engineer-lastName">Last Name</label>
+                    <input
+                        type="text"
+                        id="engineer-lastName"
+                        name="last_name"
+                        placeholder="Doe"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
                     <label for="engineer-email">Email Address</label>
                     <input
                         type="email"
                         id="engineer-email"
                         name="email"
-                        placeholder="engineer@example.com"
+                        placeholder="john.doe@example.com"
                         required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="engineer-phone">Phone Number</label>
+                    <input
+                        type="tel"
+                        id="engineer-phone"
+                        name="phone"
+                        placeholder="+1 (555) 123-4567"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="engineer-address">Address</label>
+                    <input
+                        type="text"
+                        id="engineer-address"
+                        name="address"
+                        placeholder="123 Main Street, City, State"
                     />
                 </div>
 
@@ -383,12 +425,67 @@
                 <div class="success-message" id="worker-success"></div>
 
                 <div class="form-group">
+                    <label for="worker-firstName">First Name</label>
+                    <input
+                        type="text"
+                        id="worker-firstName"
+                        name="first_name"
+                        placeholder="John"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="worker-lastName">Last Name</label>
+                    <input
+                        type="text"
+                        id="worker-lastName"
+                        name="last_name"
+                        placeholder="Smith"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
                     <label for="worker-email">Email Address</label>
                     <input
                         type="email"
                         id="worker-email"
                         name="email"
-                        placeholder="worker@example.com"
+                        placeholder="john.smith@example.com"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="worker-contact">Contact Number</label>
+                    <input
+                        type="tel"
+                        id="worker-contact"
+                        name="contact"
+                        placeholder="+1 (555) 123-4567"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="worker-address">Address</label>
+                    <input
+                        type="text"
+                        id="worker-address"
+                        name="address"
+                        placeholder="123 Main Street, City, State"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="worker-skill">Skill / Specialty</label>
+                    <input
+                        type="text"
+                        id="worker-skill"
+                        name="skill"
+                        placeholder="e.g., Electrician, Mason, Carpenter"
                         required
                     />
                 </div>
@@ -519,6 +616,14 @@
                         password_confirm: passwordConfirm,
                         role: role
                     };
+
+                    // Add engineer-specific fields
+                    if (role === 'engineer') {
+                        body.first_name = form.querySelector('[name="first_name"]').value;
+                        body.last_name = form.querySelector('[name="last_name"]').value;
+                        body.phone = form.querySelector('[name="phone"]').value;
+                        body.address = form.querySelector('[name="address"]').value;
+                    }
 
                     // Add area for workers
                     if (role === 'worker') {

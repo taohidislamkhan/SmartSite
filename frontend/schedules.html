@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedules - SmartSite</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/schedules.css">
+</head>
+<body>
+    <!-- ====================================================================
+         HEADER
+         ==================================================================== -->
+    <header>
+        <div class="header-left">
+            <span class="logo">🏗️</span>
+            <div>
+                <div class="logo-text">SmartSite</div>
+                <div class="logo-subtitle">Construction Management System</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="engineerName">Engineer Name</div>
+                <div class="user-role">Engineer</div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <!-- Debug notification -->
+    <div id="debugNotification" style="display: none; position: fixed; top: 60px; right: 20px; background: #ff6b6b; color: white; padding: 15px; border-radius: 5px; z-index: 9999; max-width: 400px; word-break: break-all; font-size: 12px;"></div>
+
+    <!-- ====================================================================
+         MAIN CONTAINER (Sidebar + Content)
+         ==================================================================== -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Dashboard Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboard</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="engineer-dashboard.html" class="nav-link">
+                            <span>📊</span> Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Operations Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="projects.html" class="nav-link">
+                            <span>📍</span> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="workers.html" class="nav-link">
+                            <span>👷</span> Workers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="resources.html" class="nav-link">
+                            <span>📦</span> Resources
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Management Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="costs.html" class="nav-link">
+                            <span>💰</span> Costs & Budget
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="schedules.html" class="nav-link active">
+                            <span>📅</span> Schedules
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Monitoring Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Monitoring</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="alerts.html" class="nav-link">
+                            <span>🔔</span> Alerts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="safety.html" class="nav-link">
+                            <span>⚠️</span> Safety
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span>📊</span> Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- ════════════════════════════════════════════════════════════════
+                 SECTION A: PAGE HEADER
+                 ════════════════════════════════════════════════════════════════ -->
+            <div class="page-header page-header-with-action">
+                <div>
+                    <h1 class="page-title">Schedules</h1>
+                    <p class="page-subtitle">Task Planning & Timeline Tracking</p>
+                </div>
+                <a href="engineer-dashboard.html" class="btn-back">← Back to Dashboard</a>
+            </div>
+
+            <!-- ════════════════════════════════════════════════════════════════
+                 SECTION B: SCHEDULE SUMMARY (KPIs)
+                 ════════════════════════════════════════════════════════════════ 
+                 
+                 CONCEPT: Summary cards showing key schedule metrics
+                 - Total tasks under scheduling
+                 - Currently active/in-progress tasks
+                 - Successfully completed tasks
+                 - Tasks that exceeded their planned dates
+                 
+                 DBMS: Aggregated from Task table joined with Schedule table
+                 ════════════════════════════════════════════════════════════════ -->
+            <div class="kpi-cards-container">
+                <div class="kpi-card">
+                    <div class="kpi-icon">📋</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="totalScheduledTasks">--</div>
+                        <div class="kpi-label">Total Scheduled Tasks</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">⏳</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="tasksInProgress">--</div>
+                        <div class="kpi-label">Tasks In Progress</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">✅</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="completedTasks">--</div>
+                        <div class="kpi-label">Completed Tasks</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-card-alert">
+                    <div class="kpi-icon">⚠️</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="delayedTasks">--</div>
+                        <div class="kpi-label">Delayed Tasks</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════════════════════════════════════════════════════════
+                 SECTION C: FILTERS
+                 ════════════════════════════════════════════════════════════════ 
+                 
+                 CONCEPT: Frontend-based filtering controls
+                 Engineers can filter by:
+                 - Project/Area (to view schedules for specific projects)
+                 - Task Status (planned, in-progress, completed, on-hold)
+                 - Date Range (view tasks scheduled for specific period)
+                 - Delayed Toggle (show only overdue/delayed tasks)
+                 
+                 IMPLEMENTATION: Client-side filtering using JavaScript
+                 ════════════════════════════════════════════════════════════════ -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label for="projectFilter">Project:</label>
+                    <select id="projectFilter" class="filter-select">
+                        <option value="">All Projects</option>
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="statusFilter">Status:</label>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Statuses</option>
+                        <option value="planned">Planned</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="on-hold">On Hold</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="startDateFilter">Start Date From:</label>
+                    <input 
+                        type="date" 
+                        id="startDateFilter" 
+                        class="filter-input"
+                    >
+                </div>
+
+                <div class="filter-group">
+                    <label for="endDateFilter">End Date To:</label>
+                    <input 
+                        type="date" 
+                        id="endDateFilter" 
+                        class="filter-input"
+                    >
+                </div>
+
+                <div class="filter-group filter-group-toggle">
+                    <label>
+                        <input 
+                            type="checkbox" 
+                            id="delayedOnlyToggle" 
+                            class="filter-checkbox"
+                        >
+                        <span>Show Only Delayed Tasks</span>
+                    </label>
+                </div>
+
+                <button id="resetFilters" class="btn btn-secondary">Reset Filters</button>
+            </div>
+
+            <!-- ════════════════════════════════════════════════════════════════
+                 SECTION D: SCHEDULE TABLE
+                 ════════════════════════════════════════════════════════════════ 
+                 
+                 TABLE STRUCTURE:
+                 Columns display both planned and actual schedule information,
+                 enabling comparison and delay identification.
+                 
+                 KEY COLUMNS:
+                 - Project/Area Name: Which project task belongs to
+                 - Task Name: Name/description of task
+                 - Assigned Worker: Engineer/worker responsible
+                 - Planned Dates: When task was scheduled
+                 - Actual Dates: When task actually occurred
+                 - Status: Current state (planned, in-progress, completed, etc.)
+                 - Delay: Calculated difference (Actual - Planned end date)
+                 - Indicator: Visual status (On-time/Delayed)
+                 
+                 DBMS LOGIC:
+                 Joins Task → Schedule → Area → Worker tables
+                 Delay calculation: MAX(0, DATEDIFF(actual_end_date, planned_end_date))
+                 Status colors: Green (on-time), Yellow (at-risk), Red (delayed)
+                 ════════════════════════════════════════════════════════════════ -->
+            <div class="schedule-table-container">
+                <div id="loadingSpinner" class="loading-spinner">
+                    <p>Loading schedules...</p>
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📅</div>
+                    <h3>No schedules found</h3>
+                    <p>No tasks match the current filters. Adjust your filters or create new tasks.</p>
+                </div>
+
+                <table id="scheduleTable" class="schedule-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Task Name</th>
+                            <th>Assigned To</th>
+                            <th>Planned Start</th>
+                            <th>Planned End</th>
+                            <th>Actual Start</th>
+                            <th>Actual End</th>
+                            <th>Status</th>
+                            <th>Delay (days)</th>
+                            <th>Indicator</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <!-- Schedule rows populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ════════════════════════════════════════════════════════════════
+                 SECTION E: SCHEDULE-RELATED ALERTS
+                 ════════════════════════════════════════════════════════════════ 
+                 
+                 CONCEPT: Display alerts triggered by schedule anomalies
+                 
+                 ALERT TYPES (from database triggers):
+                 1. Task Delay Alert: Task actual_end_date > planned_end_date
+                 2. Overdue Alert: Task in-progress but past planned_end_date
+                 3. Upcoming Deadline: Task starting soon
+                 
+                 DBMS: Data comes from Alert table (generated by DB triggers)
+                 Frontend: Read-only consumption of alert data
+                 ════════════════════════════════════════════════════════════════ -->
+            <div class="alerts-section">
+                <h2 class="section-title">Schedule Alerts</h2>
+                <div id="alertsList" class="alerts-list">
+                    <!-- Alerts populated by JavaScript -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+
+
+    <script src="js/common.js?v=2"></script>
+    <script src="js/schedules.js?v=2"></script>
+</body>
+</html>
