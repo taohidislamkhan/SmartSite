@@ -1,9 +1,3 @@
-"""
-SmartSite Backend API
-Construction Area Management System
-Database: area_mgmt (MySQL)
-"""
-
 import os
 import sys
 from pathlib import Path

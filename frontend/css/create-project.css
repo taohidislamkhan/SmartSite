@@ -55,64 +55,18 @@
     --transition-slow: 350ms ease-in-out;
 }
 
-/* ===== RESET & BASE STYLES ===== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* ===== CONTENT WRAPPER ===== */
+.content-wrapper {
+    padding: var(--space-xl);
+    max-width: 700px;
 }
 
-body {
-    font-family: var(--font-base);
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    color: var(--color-gray-900);
-    line-height: 1.6;
-    min-height: 100vh;
-}
-
-/* ===== PAGE LAYOUT ===== */
-.page-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-.form-header {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: var(--color-white);
-    padding: var(--space-2xl) var(--space-xl);
-    box-shadow: var(--shadow-md);
-    text-align: center;
-}
-
-.header-content h1 {
-    font-size: var(--font-size-3xl);
-    font-weight: 700;
-    margin-bottom: var(--space-sm);
-}
-
-.header-subtitle {
-    font-size: var(--font-size-base);
-    opacity: 0.9;
-    font-weight: 400;
-}
-
-/* ===== MAIN CONTENT ===== */
-.form-main {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-2xl) var(--space-xl);
-}
-
+/* ===== FORM CONTAINER ===== */
 .form-container {
     background: var(--color-white);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
     padding: var(--space-2xl);
-    max-width: 600px;
-    width: 100%;
     animation: slideUp 0.3s var(--transition-base);
 }
 
